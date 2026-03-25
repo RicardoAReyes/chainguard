@@ -1,0 +1,16 @@
+# Default: public npm (for @wordpress/scripts and its large dependency tree)
+registry=https://registry.npmjs.org
+
+# Chainguard JS registry auth (used explicitly for alpinejs, chart.js, motion)
+# Generate credentials at: https://console.chainguard.dev
+# base64 encode as: echo -n "username:password" | base64
+//libraries.cgr.dev/:_auth=<base64_encoded_username:password>
+
+
+#Chainguard Repository - Fall-Back feature
+#registry=https://libraries.cgr.dev/javascript
+# //libraries.cgr.dev/:_auth=<base64_auth>
+
+No scope overrides needed. Every package request goes through Chainguard's registry:
+- Packages Chainguard has curated → served with SLSA attestations
+- Everything else → proxied from upstream npm transparently

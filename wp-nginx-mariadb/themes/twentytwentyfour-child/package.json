@@ -1,0 +1,17 @@
+{
+  "name": "twentytwentyfour-child",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "install:chainguard": "npm install alpinejs@2.8.2 chart.js@^4.4.3 motion@^12.0.0 --registry https://libraries.cgr.dev/javascript"
+  },
+  "dependencies": {
+    "alpinejs": "^2.8.2",
+    "chart.js": "^4.5.1",
+    "motion": "^12.35.1"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^30.0.0"
+  }
+}

@@ -1,0 +1,52 @@
+services:
+  app:
+    build: .
+    image: wordpress-custom:latest
+    restart: unless-stopped
+    user: root
+    entrypoint: ["/bin/sh", "-c", "[ -f /var/www/html/index.php ] || cp -r /usr/src/wordpress/. /var/www/html/ && [ -f /var/www/html/wp-config.php ] || cp /var/www/html/wp-config-docker.php /var/www/html/wp-config.php && exec php-fpm"]
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+    volumes:
+      - document-root:/var/www/html
+      - ./themes/twentytwentyfour-child:/var/www/html/wp-content/themes/twentytwentyfour-child
+
+  node:
+    image: cgr.dev/chainguard-private/node:latest
+    restart: unless-stopped
+    entrypoint: ["/usr/bin/npm"]
+    working_dir: /app
+    command: ["run", "start"]
+    volumes:
+      - ./themes/twentytwentyfour-child:/app
+
+  nginx:
+    image: cgr.dev/chainguard-private/nginx:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8080"
+    volumes:
+      - document-root:/var/www/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+
+  mariadb:
+    image: cgr.dev/chainguard-private/mariadb:latest
+    restart: unless-stopped
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
+      MARIADB_USER: ${WORDPRESS_DB_USER}
+      MARIADB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MARIADB_DATABASE: ${WORDPRESS_DB_NAME}
+    ports:
+      - "3306:3306"
+    # Option 1: give MariaDB its own data volume (recommended)
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    # (Option 2: no volume at all if you don't care about DB persistence)
+
+volumes:
+  document-root:
+  mariadb-data:

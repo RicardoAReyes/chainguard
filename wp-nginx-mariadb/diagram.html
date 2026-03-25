@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WordPress Stack - Network Diagram</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    body { font-family: sans-serif; background: #f5f5f5; padding: 2rem; }
+    h1 { color: #1a1a2e; }
+    .mermaid { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+  <h1>Chainguard WordPress Stack</h1>
+  <div class="mermaid">
+graph TB
+    Browser["🌐 Browser\n:8000"]
+
+    subgraph cgr_upstream["🔐 Chainguard Registries"]
+        subgraph cgr_containers["🐳 Containers\ncgr.dev/chainguard-private"]
+            img_nginx["nginx:latest"]
+            img_wordpress["wordpress:latest-dev"]
+            img_mariadb["mariadb:latest"]
+            img_node["node:latest"]
+        end
+        subgraph cgr_os["🐺 OS Packages\npackages.wolfi.dev"]
+            pkg_gd["php-8.4-gd"]
+            pkg_xdebug["php-8.4-xdebug"]
+        end
+        subgraph cgr_js["✅ OSS JavaScript Libraries\nlibraries.cgr.dev/javascript\nSLSA attested · curated"]
+            js_alpine["alpinejs@2.8.2"]
+            js_chartjs["chart.js@4.5.1"]
+            js_motion["motion@12.35.1"]
+        end
+    end
+
+    subgraph pub_upstream["⬆️ Public Upstream Registries"]
+        npm_public["📂 registry.npmjs.org\nPublic npm Registry\n@wordpress/scripts + 749 transitive deps"]
+    end
+
+    subgraph Docker["Docker Compose Network"]
+        nginx["🔀 nginx\ncgr.dev/chainguard-private/nginx:latest\nPort: 8080"]
+        app["⚙️ app / WordPress\nwordpress-custom:latest\nBase: cgr.dev/chainguard-private/wordpress:latest-dev\nPort: 9000 (FastCGI)"]
+        mariadb["🗄️ mariadb\ncgr.dev/chainguard-private/mariadb:latest\nPort: 3306"]
+        node["🏗️ node (build only)\ncgr.dev/chainguard-private/node:latest"]
+    end
+
+    subgraph pub_js["⬆️ Public npm (build tooling only)"]
+        wpscripts["@wordpress/scripts@30.x\n+ 749 transitive deps"]
+    end
+
+    subgraph volume["📦 Shared Volume: document-root"]
+        html["/var/www/html\nWordPress files + theme\nbuild/index.js"]
+    end
+
+    img_nginx -->|"docker pull"| nginx
+    img_wordpress -->|"docker pull"| app
+    img_mariadb -->|"docker pull"| mariadb
+    img_node -->|"docker pull"| node
+    pkg_gd -->|"apk add (Dockerfile)"| app
+    pkg_xdebug -->|"apk add (Dockerfile)"| app
+    js_alpine -->|"npm run install:chainguard"| node
+    js_chartjs -->|"npm run install:chainguard"| node
+    js_motion -->|"npm run install:chainguard"| node
+    npm_public -->|"npm install"| wpscripts
+    wpscripts -->|"wp-scripts build"| node
+    node -->|"builds to build/index.js"| html
+    Browser -->|"HTTP :8000"| nginx
+    nginx -->|"FastCGI"| app
+    app -->|"SQL :3306"| mariadb
+    nginx --- html
+    app --- html
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</body>
+</html>

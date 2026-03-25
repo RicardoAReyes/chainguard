@@ -1,0 +1,18 @@
+# Secrets & credentials
+.env
+themes/**/.npmrc
+
+# Node
+themes/**/node_modules/
+themes/**/build/
+themes/**/.cache/
+
+# Docker volumes (if ever switched to bind mounts)
+wordpress/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

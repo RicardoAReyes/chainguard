@@ -1,0 +1,70 @@
+ php-8.4-redis                   │ Object caching (W3 Total Cache, Redis Object Cache plugin) │
+  ├─────────────────────────────────┼────────────────────────────────────────────────────────────┤
+  │ php-8.4-apcu                    │ In-memory key-value caching                                │                                                                                                                     
+  ├─────────────────────────────────┼────────────────────────────────────────────────────────────┤                                                                                                                     
+  │ php-8.4-gd                      │ Image manipulation (alternative/supplement to imagick)     │                                                                                                                     
+  ├─────────────────────────────────┼────────────────────────────────────────────────────────────┤                                                                                                                     
+  │ php-8.4-exif                    │ EXIF data in media uploads                                 │                                                                                                                   
+  ├─────────────────────────────────┼────────────────────────────────────────────────────────────┤                                                                                                                     
+  │ php-8.4-pdo + php-8.4-pdo_mysql │ PDO database access (some plugins require it)              │                                                                                                                   
+  ├─────────────────────────────────┼────────────────────────────────────────────────────────────┤                                                                                                                     
+  │ php-8.4-soap                    │ SOAP-based integrations/plugins                            │                                                                                                                   
+  ├─────────────────────────────────┼────────────────────────────────────────────────────────────┤                                                                                                                     
+  │ php-8.4-sockets                 │ Real-time features, some caching plugins                   │                                                                                                                   
+  ├─────────────────────────────────┼────────────────────────────────────────────────────────────┤                                                                                                                     
+  │ php-8.4-memcached               │ Memcached object caching                                   │
+  ├─────────────────────────────────┼────────────────────────────────────────────────────────────┤                                                                                                                     
+  │ php-8.4-xdebug                  │ Local debugging only (never in prod)                       │                                                                                                                   
+  ├─────────────────────────────────┼────────────────────────────────────────────────────────────┤                                                                                                                     
+  │ wp-cli                          │ WP-CLI for management/automation                           │                                                                                                                   
+  └─────────────────────────────────┴─────────────────────────────────────────────
+
+
+    docker compose build app                                                                                                                                                                                             
+  docker compose up -d --force-recreate app
+
+  https://skills.sh/jezweb/claude-skills/wordpress-content
+
+  a94274519973feb66efa2c29ca587d8d9cab7c9c/ec65ce0fbac44140
+
+  eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJodHRwczovL2lzc3Vlci5lbmZvcmNlLmRldiIsImV4cCI6MTc4MjE1OTcwNSwiaWF0IjoxNzc0MzgzNzA1LCJpc3MiOiJodHRwczovL3B1bGx0b2tlbi5pc3N1ZXIuY2hhaW5ndWFyZC5kZXYiLCJzdWIiOiJwdWxsLXRva2VuLTczMmI1Yjk5ZjUyZDM3OGZhZWJjMzRkMTMwZmJhOTAxZTMwYWRlOTQifQ.dhUSmw8a6-M9T8HRN6q76ojDRjDVlYZ3oK_k7izC-DKtPIoUsyX1ecAUsd6sKdsg9bivvRmINAFNDXWLQCw2vBZqT2nzC6yw4QlWlXcnJ5-ZHjiqBWTUXl-yRNMSMZla1ZxsUXIBhRI1gNgpM-BHrgKOl_ofbfVWWR1fDfcBcyh2_sLiUDx966pVJiWeR8wrxSu-mfwt9DMUlV0WFJkLgJ55gBue86CBpGVpbp8SLfBa8sihA_QCvVyFdc5F1SgHTzbEhVruxU7bl9aWoZNQWAkAod3t2-bqYvbFMTxHxgSVConoj7LxB03val4RQ6QBg4z0bASlIM1XIQeq8YK6VAVEzW6omPIuLWNeRh5Eng7WJpaxPj4Lof7mN4Bgzw1FTUkG53LukT-TtrwFc5Wf-tXzV8gFMQfnbv_NObpOT7Rd3UhiL_uP2lgUHbNcytTDXzl3EED0z156JR-8nuTVNS6tlu-bxzFmnaTh74QxFwdx2On5HNRvowK51eArL3Ca46glCtYMuwD7eRy76gtgmkwlL1ygzEVc2TOJvuta7Ps5Ek9YQUZXJsEeGKFDY9UzkE6R2EqitraSmS3WCASTqi0pP22irov2N2Z5Omhs4fprB3eXFionPdD71z2kHyOpDJRKmcisL47XEM093MTZaa6Q8zIFGrRBHa3PBTEaS7s
+
+
+
+DEMO JS Libraries:
+Step 1: docker compose run --rm node install 
+Step 2: docker compose run --rm node run install:chainguard
+
+Step 3: npm view chart.js@4.5.1 dist -loglevel=http -- Review JS supplier
+Step 3: npm view chart.js@4.5.1 dist --registry https://libraries.cgr.dev/javascript --loglevel=http
+curl https://libraries.cgr.dev/javascript/-/npm/v1/attestations/chart.js@4.5.1
+
+Step 4: docker compose run --rm node run build
+
+So your WordPress project structure reflects this correctly:
+
+  wp-nginx-mariadb/               ← Docker project root
+  ├── docker-compose.yaml
+  ├── Dockerfile
+  ├── nginx.conf
+  └── themes/
+      └── twentytwentyfour-child/ ← Theme root (self-contained)
+          ├── package.json
+          ├── .npmrc
+          ├── node_modules/       ← belongs to the theme
+          ├── src/
+          │   └── index.js
+          ├── build/              ← compiled output
+          ├── functions.php
+          └── style.css
+
+
+
+  registry=https://libraries.cgr.dev/javascript
+  //libraries.cgr.dev/:_auth=<base64_auth>
+
+  No scope overrides needed. Every package request goes through Chainguard's registry:
+
+  - Packages Chainguard has curated → served with SLSA attestations
+  - Everything else → proxied from upstream npm transparently
+
