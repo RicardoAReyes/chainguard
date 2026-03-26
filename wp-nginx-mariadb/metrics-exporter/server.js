@@ -7,7 +7,7 @@ const path = require('path');
 
 const SCANS_DIR = process.env.SCANS_DIR || '/scans';
 const PORT      = parseInt(process.env.PORT || '9100', 10);
-const IMAGES    = ['wordpress', 'nginx', 'mariadb', 'node'];
+const IMAGES    = ['wordpress', 'nginx', 'mariadb', 'node', 'grype', 'prometheus', 'grafana'];
 const SEVERITIES = ['critical', 'high', 'medium', 'low', 'unknown'];
 
 function getLatestScanFile(image) {

@@ -158,10 +158,121 @@
       }
     },
     {
+      "id": 8,
+      "type": "stat",
+      "title": "grype",
+      "gridPos": { "x": 0, "y": 4, "w": 8, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "grype_scan_total{image=\"grype\"}",
+          "legendFormat": "Total CVEs",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "orange", "value": 30 },
+              { "color": "red", "value": 80 }
+            ]
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "prometheus",
+      "gridPos": { "x": 8, "y": 4, "w": 8, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "grype_scan_total{image=\"prometheus\"}",
+          "legendFormat": "Total CVEs",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "orange", "value": 30 },
+              { "color": "red", "value": 80 }
+            ]
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "grafana",
+      "gridPos": { "x": 16, "y": 4, "w": 8, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "grype_scan_total{image=\"grafana\"}",
+          "legendFormat": "Total CVEs",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "orange", "value": 30 },
+              { "color": "red", "value": 80 }
+            ]
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
       "id": 5,
       "type": "bargauge",
       "title": "Vulnerabilities by Image & Severity",
-      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 10 },
+      "gridPos": { "x": 0, "y": 8, "w": 24, "h": 10 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
@@ -229,7 +340,7 @@
       "id": 6,
       "type": "table",
       "title": "CVE Breakdown by Image",
-      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 8 },
+      "gridPos": { "x": 0, "y": 18, "w": 24, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         { "expr": "grype_scan_vulnerabilities{severity=\"critical\"}", "legendFormat": "{{image}}", "instant": true, "refId": "A" },
@@ -264,7 +375,7 @@
       "id": 7,
       "type": "timeseries",
       "title": "CVE Trend Over Time (Total per Image)",
-      "gridPos": { "x": 0, "y": 22, "w": 24, "h": 8 },
+      "gridPos": { "x": 0, "y": 26, "w": 24, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {

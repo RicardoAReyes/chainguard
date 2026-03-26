@@ -32,6 +32,9 @@ IMAGES=(
   "nginx:cgr.dev/chainguard-private/nginx:latest"
   "mariadb:cgr.dev/chainguard-private/mariadb:latest"
   "node:cgr.dev/chainguard-private/node:latest"
+  "grype:cgr.dev/chainguard-private/grype:latest"
+  "prometheus:cgr.dev/chainguard-private/prometheus:latest"
+  "grafana:cgr.dev/chainguard-private/grafana:latest"
 )
 
 log "Timestamp: ${TS}"
