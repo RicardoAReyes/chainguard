@@ -45,6 +45,7 @@
     <div class="legend-item"><div class="legend-dot" style="background:#e8eaf6;border-color:#6e40c9"></div> Runtime Container</div>
     <div class="legend-item"><div class="legend-dot" style="background:#e3f5fb;border-color:#1f7fb5"></div> Observability</div>
     <div class="legend-item"><div class="legend-dot" style="background:#f0f0f0;border-color:#888"></div> Bind Mount</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fce8ff;border-color:#a855f7"></div> AI Claude Skill</div>
   </div>
   <div id="diagram-container"><span id="hint">Scroll to zoom · Click and drag to pan</span></div>
   <div class="mermaid" id="mermaid-src">
@@ -93,6 +94,10 @@ graph TB
         wpscripts["@wordpress/scripts@30.x + 749 transitive deps"]:::upstream
     end
 
+    subgraph ai_tooling["AI Tooling"]
+        claude_skill["Claude Skill - wordpress-content - skills.sh/jezweb/claude-skills/wordpress-content"]:::aitool
+    end
+
     subgraph volume["Bind Mounts"]
         html["/var/www/html"]:::storage
         scans["scans/"]:::storage
@@ -121,6 +126,7 @@ graph TB
     app -->|SQL :3306| mariadb
     nginx --- html
     app --- html
+    claude_skill -->|WP-CLI via Docker| app
     grype -->|writes JSON| scans
     scans -->|reads| exporter
     exporter -->|metrics :9100| prometheus
@@ -128,11 +134,12 @@ graph TB
     prometheus --- promdata
     grafana --- grafdata
 
-    classDef cgr     fill:#d4edda,stroke:#2da44e,color:#1a3d1a
+    classDef cgr      fill:#d4edda,stroke:#2da44e,color:#1a3d1a
     classDef upstream fill:#fff3cd,stroke:#e07b20,color:#3d2000
     classDef runtime  fill:#e8eaf6,stroke:#6e40c9,color:#1a1a3d
     classDef obs      fill:#e3f5fb,stroke:#1f7fb5,color:#0a2d40
     classDef storage  fill:#f0f0f0,stroke:#888888,color:#333333
+    classDef aitool   fill:#fce8ff,stroke:#a855f7,color:#3b0764
 
     style cgr_upstream  fill:#f0faf0,stroke:#2da44e,stroke-width:2px
     style cgr_containers fill:#e6f4e6,stroke:#2da44e
@@ -143,9 +150,10 @@ graph TB
     style Docker         fill:#f0eefa,stroke:#6e40c9,stroke-width:2px
     style observability  fill:#e0f3fb,stroke:#1f7fb5,stroke-width:1.5px
     style volume         fill:#f5f5f5,stroke:#888888,stroke-width:1.5px
+    style ai_tooling     fill:#fdf4ff,stroke:#a855f7,stroke-width:2px
   </div>
   <script>
-    mermaid.initialize({ startOnLoad: false, theme: 'default' });
+    mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' });
     mermaid.run({ nodes: [document.getElementById('mermaid-src')] }).then(() => {
       const svg = document.querySelector('#mermaid-src svg');
       svg.removeAttribute('height');
@@ -160,6 +168,18 @@ graph TB
         minZoom: 0.2,
         maxZoom: 10,
         zoomScaleSensitivity: 0.3,
+      });
+
+      // Make Claude Skill node clickable
+      svg.querySelectorAll('.node').forEach(node => {
+        const label = node.querySelector('text, span');
+        if (label && label.textContent.includes('wordpress-content')) {
+          node.style.cursor = 'pointer';
+          node.title = 'Open Claude Skill';
+          node.addEventListener('click', () => {
+            window.open('https://skills.sh/jezweb/claude-skills/wordpress-content', '_blank');
+          });
+        }
       });
     });
   </script>
