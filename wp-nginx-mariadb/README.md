@@ -1,8 +1,10 @@
 # WordPress + Nginx + MariaDB
 
-A containerized WordPress stack built entirely on [Chainguard](https://chainguard.dev) hardened images, with a Node.js-powered theme build pipeline sourcing JavaScript libraries from the Chainguard JS registry.
+A containerized WordPress stack built entirely on [Chainguard](https://chainguard.dev) hardened images, with a Node.js-powered theme build pipeline, vulnerability scanning via Grype, and a full observability stack (Prometheus + Grafana).
 
 ## Stack
+
+### Application
 
 | Container | Image | Role |
 |---|---|---|
@@ -11,18 +13,42 @@ A containerized WordPress stack built entirely on [Chainguard](https://chainguar
 | `mariadb` | `cgr.dev/chainguard-private/mariadb:latest` | Database |
 | `node` | `cgr.dev/chainguard-private/node:latest` | JS build (ephemeral) |
 
-## Chainguard Libraries
+### Observability
+
+| Container | Image | Role |
+|---|---|---|
+| `metrics-exporter` | `cgr.dev/chainguard-private/node:latest` | Reads Grype scan JSON, exposes `:9100/metrics` |
+| `prometheus` | `cgr.dev/chainguard-private/prometheus:latest` | Scrapes metrics every 15s |
+| `grafana` | `cgr.dev/chainguard-private/grafana:latest` | CVE dashboard, proxied at `/grafana/` |
+
+## Chainguard Assets
+
+### Container Images (`cgr.dev/chainguard-private`)
+All 7 runtime images are sourced from Chainguard's private registry — hardened, minimal, and rebuilt daily with zero known CVEs.
 
 ### APK Packages (installed into `app` via Dockerfile)
 - `php-8.4-gd` — image manipulation
 - `php-8.4-xdebug` — local debugging
 
-### JavaScript Libraries (sourced from `libraries.cgr.dev/javascript`)
+### JavaScript Libraries (`libraries.cgr.dev/javascript`)
 | Package | Version | SLSA Attested |
 |---|---|---|
 | `alpinejs` | `2.8.2` | ✅ |
 | `chart.js` | `4.5.1` | ✅ |
 | `motion` | `12.35.1` | ✅ |
+
+## AI Tooling
+
+WordPress content is managed using a Claude AI Skill:
+
+| Skill | Source | Purpose |
+|---|---|---|
+| `wordpress-content` | [skills.sh/jezweb/claude-skills/wordpress-content](https://skills.sh/jezweb/claude-skills/wordpress-content) | Structured WP-CLI workflow: draft → verify → publish |
+
+Import the skill in Claude Code:
+```
+import the wordpress-content skill from https://skills.sh/jezweb/claude-skills/wordpress-content
+```
 
 ## Prerequisites
 
@@ -70,6 +96,26 @@ docker compose up -d
 
 Visit http://localhost:8000 to complete the WordPress installer.
 
+> **Restore from scratch:** `bash bin/setup.sh` — tears down and rebuilds the full stack including WordPress install, pages, and theme.
+
+## Vulnerability Scanning
+
+Run Grype scans on all container images on demand:
+
+```bash
+bash bin/scan.sh
+```
+
+Results are saved to `scans/<image>/<YYYYMMDDTHHMMSSZ>.json`. The metrics-exporter reads these files and exposes them as Prometheus metrics, which Grafana visualises in the **Grype Security Scan Report** dashboard.
+
+Scanned images: `wordpress`, `nginx`, `mariadb`, `node`, `grype`, `prometheus`, `grafana`
+
+## Grafana Dashboard
+
+The CVE dashboard is embedded in WordPress at **http://localhost:8000/security-scan-report/**
+
+It is also accessible directly at **http://localhost:8000/grafana/** (proxied through nginx, same-origin).
+
 ## Theme Build
 
 The `twentytwentyfour-child` theme uses `@wordpress/scripts` (webpack) to compile `src/index.js` into `build/index.js`.
@@ -86,6 +132,22 @@ src/index.js
 | Runtime libs | `alpinejs`, `chart.js`, `motion` | `libraries.cgr.dev/javascript` |
 | Build tooling | `@wordpress/scripts` + 749 deps | `registry.npmjs.org` |
 
+## Architecture Diagram
+
+Open `diagram.html` in a browser for an interactive, color-coded architecture diagram with pan/zoom:
+
+```bash
+open diagram.html
+```
+
+Color legend:
+- **Green** — Chainguard assets (images, Wolfi packages, JS libs)
+- **Amber** — Public upstream (npm registry, build tooling)
+- **Purple (runtime)** — Docker Compose containers
+- **Blue** — Observability stack
+- **Gray** — Bind mounts
+- **Purple (AI)** — Claude AI Skill
+
 ## Project Structure
 
 ```
@@ -94,8 +156,21 @@ wp-nginx-mariadb/
 ├── Dockerfile                   # Custom WordPress image
 ├── nginx.conf                   # Nginx reverse proxy config
 ├── apko.yaml                    # Chainguard image spec
-├── .env.example                 # Environment variable template
-├── diagram.html                 # Architecture diagram
+├── diagram.html                 # Interactive architecture diagram
+├── bin/
+│   ├── scan.sh                  # On-demand Grype vulnerability scanner
+│   └── setup.sh                 # Full stack restore script
+├── metrics-exporter/
+│   ├── server.js                # Prometheus metrics exporter
+│   └── Dockerfile
+├── prometheus/
+│   └── prometheus.yml           # Scrape config
+├── grafana/
+│   └── provisioning/
+│       ├── datasources/         # Prometheus datasource
+│       └── dashboards/          # Grype scan report dashboard
+├── scans/                       # Grype JSON results (git ignored)
+│   └── <image>/<timestamp>.json
 └── themes/
     └── twentytwentyfour-child/
         ├── src/index.js         # JS entry point
@@ -104,7 +179,7 @@ wp-nginx-mariadb/
         ├── package.json         # npm manifest
         ├── .npmrc.example       # Registry config template
         ├── functions.php        # WordPress enqueue logic
-        └── style.css            # Theme header
+        └── style.css            # Theme styles
 ```
 
 ## Verify Chainguard Attestations

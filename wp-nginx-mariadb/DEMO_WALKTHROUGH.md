@@ -2,6 +2,14 @@
 
 A live CLI session demonstrating how loading a Claude skill changes the quality of AI-assisted WordPress content creation.
 
+**Skill:** `wordpress-content`
+**Source:** [skills.sh/jezweb/claude-skills/wordpress-content](https://skills.sh/jezweb/claude-skills/wordpress-content)
+
+Import in Claude Code:
+```
+import the wordpress-content skill from https://skills.sh/jezweb/claude-skills/wordpress-content
+```
+
 ---
 
 ## Setup
@@ -211,3 +219,20 @@ EOF'
 - **With a skill**, Claude follows a proven, structured workflow every time.
 - Skills are composable: the same pattern works for posts, pages, media, menus, and ACF fields.
 - Skills are shareable: one `/import` URL gives any team member the same capability.
+
+---
+
+## Bonus — Observability Stack
+
+The demo also includes a full vulnerability scanning pipeline built with Chainguard images:
+
+```bash
+# Run Grype scans on all 7 container images
+bash bin/scan.sh
+```
+
+Results feed into Prometheus → Grafana and are embedded in WordPress at:
+**http://localhost:8000/security-scan-report/**
+
+The architecture diagram (with pan/zoom) is at:
+**http://localhost:8000/diagram/**  or  `open diagram.html`
