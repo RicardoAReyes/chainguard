@@ -7,8 +7,9 @@ themes/**/node_modules/
 themes/**/build/
 themes/**/.cache/
 
-# Docker volumes (if ever switched to bind mounts)
+# Docker volumes (bind mounts on host)
 wordpress/
+mariadb-data/
 
 # macOS
 .DS_Store

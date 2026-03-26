@@ -45,8 +45,7 @@ services:
       - "3306:3306"
     # Option 1: give MariaDB its own data volume (recommended)
     volumes:
-      - mariadb-data:/var/lib/mysql
+      - ./mariadb-data:/var/lib/mysql
     # (Option 2: no volume at all if you don't care about DB persistence)
 
-volumes:
-  mariadb-data:
+volumes: {}
