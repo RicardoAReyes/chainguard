@@ -10,6 +10,11 @@ themes/**/.cache/
 # Docker volumes (bind mounts on host)
 wordpress/
 mariadb-data/
+prometheus/data/
+grafana/data/
+
+# Grype scan results (timestamped JSON artifacts)
+scans/
 
 # macOS
 .DS_Store

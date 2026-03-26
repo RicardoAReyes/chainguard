@@ -48,4 +48,47 @@ services:
       - ./mariadb-data:/var/lib/mysql
     # (Option 2: no volume at all if you don't care about DB persistence)
 
+  metrics-exporter:
+    build:
+      context: ./metrics-exporter
+    image: grype-metrics-exporter:latest
+    restart: unless-stopped
+    volumes:
+      - ./scans:/scans:ro
+    expose:
+      - "9100"
+
+  prometheus:
+    image: cgr.dev/chainguard-private/prometheus:latest
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - metrics-exporter
+
+  grafana:
+    image: cgr.dev/chainguard-private/grafana:latest
+    restart: unless-stopped
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_AUTH_DISABLE_LOGIN_FORM: "false"
+      GF_SERVER_ROOT_URL: "http://localhost:8000/grafana/"
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
 volumes: {}

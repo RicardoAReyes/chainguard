@@ -1,0 +1,294 @@
+{
+  "uid": "grype-scan-report",
+  "title": "Grype Security Scan Report",
+  "description": "Container image vulnerability scan results from Grype via Chainguard images",
+  "tags": ["security", "grype", "chainguard"],
+  "schemaVersion": 40,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "wordpress-custom",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "grype_scan_total{image=\"wordpress\"}",
+          "legendFormat": "Total CVEs",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "orange", "value": 30 },
+              { "color": "red", "value": 80 }
+            ]
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "nginx",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "grype_scan_total{image=\"nginx\"}",
+          "legendFormat": "Total CVEs",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "orange", "value": 30 },
+              { "color": "red", "value": 80 }
+            ]
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "mariadb",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "grype_scan_total{image=\"mariadb\"}",
+          "legendFormat": "Total CVEs",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "orange", "value": 30 },
+              { "color": "red", "value": 80 }
+            ]
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "node",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "grype_scan_total{image=\"node\"}",
+          "legendFormat": "Total CVEs",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "orange", "value": 30 },
+              { "color": "red", "value": 80 }
+            ]
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "bargauge",
+      "title": "Vulnerabilities by Image & Severity",
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 10 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "grype_scan_vulnerabilities{severity=\"critical\"}",
+          "legendFormat": "{{image}} — critical",
+          "instant": true,
+          "refId": "A"
+        },
+        {
+          "expr": "grype_scan_vulnerabilities{severity=\"high\"}",
+          "legendFormat": "{{image}} — high",
+          "instant": true,
+          "refId": "B"
+        },
+        {
+          "expr": "grype_scan_vulnerabilities{severity=\"medium\"}",
+          "legendFormat": "{{image}} — medium",
+          "instant": true,
+          "refId": "C"
+        },
+        {
+          "expr": "grype_scan_vulnerabilities{severity=\"low\"}",
+          "legendFormat": "{{image}} — low",
+          "instant": true,
+          "refId": "D"
+        },
+        {
+          "expr": "grype_scan_vulnerabilities{severity=\"unknown\"}",
+          "legendFormat": "{{image}} — unknown",
+          "instant": true,
+          "refId": "E"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "valueMode": "color",
+        "showUnfilled": true,
+        "minVizWidth": 0,
+        "minVizHeight": 16,
+        "namePlacement": "auto",
+        "legendDisplayMode": "list"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "short",
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "blue", "value": null }]
+          }
+        },
+        "overrides": [
+          { "matcher": { "id": "byRegexp", "options": ".*critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byRegexp", "options": ".*high" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
+          { "matcher": { "id": "byRegexp", "options": ".*medium" },   "properties": [{ "id": "color", "value": { "fixedColor": "#d69e2e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byRegexp", "options": ".*low" },      "properties": [{ "id": "color", "value": { "fixedColor": "#3182ce", "mode": "fixed" } }] },
+          { "matcher": { "id": "byRegexp", "options": ".*unknown" },  "properties": [{ "id": "color", "value": { "fixedColor": "#718096", "mode": "fixed" } }] }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "type": "table",
+      "title": "CVE Breakdown by Image",
+      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "grype_scan_vulnerabilities{severity=\"critical\"}", "legendFormat": "{{image}}", "instant": true, "refId": "A" },
+        { "expr": "grype_scan_vulnerabilities{severity=\"high\"}",     "legendFormat": "{{image}}", "instant": true, "refId": "B" },
+        { "expr": "grype_scan_vulnerabilities{severity=\"medium\"}",   "legendFormat": "{{image}}", "instant": true, "refId": "C" },
+        { "expr": "grype_scan_vulnerabilities{severity=\"low\"}",      "legendFormat": "{{image}}", "instant": true, "refId": "D" },
+        { "expr": "grype_scan_vulnerabilities{severity=\"unknown\"}",  "legendFormat": "{{image}}", "instant": true, "refId": "E" },
+        { "expr": "grype_scan_total",                                  "legendFormat": "{{image}}", "instant": true, "refId": "F" }
+      ],
+      "transformations": [
+        { "id": "labelsToFields",   "options": { "valueLabel": "severity" } },
+        { "id": "merge",            "options": {} },
+        { "id": "organize",         "options": { "renameByName": { "image": "Image", "critical": "Critical", "high": "High", "medium": "Medium", "low": "Low", "unknown": "Unknown", "Value #F": "Total" } } }
+      ],
+      "options": {
+        "sortBy": [{ "displayName": "Total", "desc": true }],
+        "footer": { "show": false }
+      },
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "center", "displayMode": "auto" } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Image" },    "properties": [{ "id": "custom.align", "value": "left" }, { "id": "custom.width", "value": 200 }] },
+          { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "custom.displayMode", "value": "color-background" }, { "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "custom.displayMode", "value": "color-background" }, { "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Medium" },   "properties": [{ "id": "custom.displayMode", "value": "color-background" }, { "id": "color", "value": { "fixedColor": "#d69e2e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Low" },      "properties": [{ "id": "custom.displayMode", "value": "color-background" }, { "id": "color", "value": { "fixedColor": "#3182ce", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Unknown" },  "properties": [{ "id": "custom.displayMode", "value": "color-background" }, { "id": "color", "value": { "fixedColor": "#718096", "mode": "fixed" } }] }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "CVE Trend Over Time (Total per Image)",
+      "gridPos": { "x": 0, "y": 22, "w": 24, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "grype_scan_total",
+          "legendFormat": "{{image}}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "pointSize": 6,
+            "showPoints": "auto"
+          },
+          "color": { "mode": "palette-classic" },
+          "unit": "short"
+        }
+      }
+    }
+  ]
+}
