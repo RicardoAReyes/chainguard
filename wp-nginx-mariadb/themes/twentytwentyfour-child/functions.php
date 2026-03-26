@@ -13,11 +13,11 @@ function ttf_child_enqueue_scripts() {
         true
     );
 
-    // Supply chain attacks page — load Chart.js from CDN then initialize charts
+    // Supply chain attacks page — load Chart.js then initialize charts
     if ( is_page( 'supply-chain-attacks' ) ) {
         wp_enqueue_script(
             'chartjs',
-            'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js',
+            get_stylesheet_directory_uri() . '/vendor/chart.umd.min.js', // sourced from Chainguard registry: https://libraries.cgr.dev/javascript
             [],
             '4.4.3',
             true
