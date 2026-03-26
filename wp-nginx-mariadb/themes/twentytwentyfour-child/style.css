@@ -143,3 +143,19 @@ footer a {
 footer a:hover {
   color: var(--color-sage) !important;
 }
+
+/* Full-width layout for diagram page (page-id-38) */
+.page-id-38 .entry-content.is-layout-constrained > *,
+.page-id-38 .entry-content.is-layout-constrained > .alignfull {
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.page-id-38 .entry-content.has-global-padding {
+  padding-inline: 0 !important;
+}
+
+.page-id-38 .entry-content {
+  padding: 0 !important;
+}
