@@ -8,6 +8,7 @@ USER root
 
 RUN apk add --no-cache \
     php-8.4-gd \
+    php-8.4-phar \
     php-8.4-xdebug
 
 #Non Chainguard Packages

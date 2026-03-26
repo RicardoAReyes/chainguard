@@ -3,3 +3,137 @@ Theme Name: Twenty Twenty-Four Child
 Template:   twentytwentyfour
 Version:    1.0.0
 */
+
+/* ── Palette ─────────────────────────────────────────────
+   #F4F1DE  Eggshell      background
+   #E07A5F  Terra Cotta   primary accent
+   #3D405B  Space Cadet   headings / dark text
+   #81B29A  Sage          secondary accent
+   #F2CC8F  Sandy Yellow  highlight / warm tone
+────────────────────────────────────────────────────────── */
+
+:root {
+  --color-eggshell:    #F4F1DE;
+  --color-terra-cotta: #E07A5F;
+  --color-space-cadet: #3D405B;
+  --color-sage:        #81B29A;
+  --color-sandy:       #F2CC8F;
+}
+
+/* Base */
+body {
+  background-color: var(--color-eggshell);
+  color: var(--color-space-cadet);
+}
+
+/* Header */
+.wp-block-template-part[data-slug="header"],
+header.wp-block-template-part {
+  background-color: var(--color-space-cadet);
+  color: var(--color-eggshell);
+}
+
+.wp-block-site-title a {
+  color: var(--color-eggshell) !important;
+  text-decoration: none;
+}
+
+/* Navigation */
+.wp-block-navigation a {
+  color: var(--color-eggshell) !important;
+}
+
+.wp-block-navigation a:hover {
+  color: var(--color-sandy) !important;
+}
+
+/* Post titles */
+.wp-block-post-title a {
+  color: var(--color-space-cadet);
+  text-decoration: none;
+}
+
+.wp-block-post-title a:hover {
+  color: var(--color-terra-cotta);
+}
+
+/* Entry content headings */
+.entry-content h2,
+.wp-block-post-content h2 {
+  color: var(--color-space-cadet);
+  border-left: 4px solid var(--color-terra-cotta);
+  padding-left: 0.75rem;
+}
+
+.entry-content h3,
+.wp-block-post-content h3 {
+  color: var(--color-terra-cotta);
+}
+
+/* Links */
+a {
+  color: var(--color-terra-cotta);
+}
+
+a:hover {
+  color: var(--color-sage);
+}
+
+/* Buttons */
+.wp-block-button__link,
+.wp-element-button {
+  background-color: var(--color-terra-cotta) !important;
+  color: var(--color-eggshell) !important;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.wp-block-button__link:hover,
+.wp-element-button:hover {
+  background-color: var(--color-space-cadet) !important;
+}
+
+/* Post meta (date, author) */
+.wp-block-post-date,
+.wp-block-post-author-name,
+.has-small-font-size {
+  color: var(--color-sage);
+}
+
+/* Blockquote / pullquote */
+blockquote,
+.wp-block-quote {
+  border-left: 4px solid var(--color-sage);
+  background-color: #f9f7ee;
+  padding: 1rem 1.25rem;
+}
+
+/* Code */
+code,
+pre {
+  background-color: var(--color-space-cadet);
+  color: var(--color-eggshell);
+  border-radius: 4px;
+}
+
+/* Horizontal rule / separator */
+hr,
+.wp-block-separator {
+  border-color: var(--color-sage);
+  opacity: 0.5;
+}
+
+/* Footer */
+.wp-block-template-part[data-slug="footer"],
+footer.wp-block-template-part {
+  background-color: var(--color-space-cadet);
+  color: var(--color-eggshell);
+}
+
+footer a {
+  color: var(--color-sandy) !important;
+}
+
+footer a:hover {
+  color: var(--color-sage) !important;
+}

@@ -1,0 +1,109 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "color": {
+      "palette": [
+        {
+          "slug": "eggshell",
+          "color": "#F4F1DE",
+          "name": "Eggshell"
+        },
+        {
+          "slug": "terra-cotta",
+          "color": "#E07A5F",
+          "name": "Terra Cotta"
+        },
+        {
+          "slug": "space-cadet",
+          "color": "#3D405B",
+          "name": "Space Cadet"
+        },
+        {
+          "slug": "sage",
+          "color": "#81B29A",
+          "name": "Sage"
+        },
+        {
+          "slug": "sandy-yellow",
+          "color": "#F2CC8F",
+          "name": "Sandy Yellow"
+        }
+      ]
+    },
+    "typography": {
+      "fontSizes": []
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "#F4F1DE",
+      "text": "#3D405B"
+    },
+    "elements": {
+      "h1": {
+        "color": { "text": "#3D405B" }
+      },
+      "h2": {
+        "color": { "text": "#3D405B" }
+      },
+      "h3": {
+        "color": { "text": "#E07A5F" }
+      },
+      "h4": {
+        "color": { "text": "#3D405B" }
+      },
+      "link": {
+        "color": { "text": "#E07A5F" },
+        ":hover": {
+          "color": { "text": "#81B29A" }
+        }
+      },
+      "button": {
+        "color": {
+          "background": "#E07A5F",
+          "text": "#F4F1DE"
+        },
+        ":hover": {
+          "color": {
+            "background": "#3D405B",
+            "text": "#F4F1DE"
+          }
+        }
+      }
+    },
+    "blocks": {
+      "core/site-title": {
+        "color": { "text": "#3D405B" },
+        "typography": { "fontStyle": "normal", "fontWeight": "700" }
+      },
+      "core/navigation": {
+        "color": { "text": "#3D405B" }
+      },
+      "core/post-title": {
+        "color": { "text": "#3D405B" }
+      },
+      "core/separator": {
+        "color": { "text": "#81B29A" }
+      },
+      "core/quote": {
+        "color": {
+          "background": "#F2CC8F",
+          "text": "#3D405B"
+        }
+      },
+      "core/code": {
+        "color": {
+          "background": "#3D405B",
+          "text": "#F4F1DE"
+        }
+      },
+      "core/pullquote": {
+        "color": {
+          "background": "#3D405B",
+          "text": "#F4F1DE"
+        }
+      }
+    }
+  }
+}
