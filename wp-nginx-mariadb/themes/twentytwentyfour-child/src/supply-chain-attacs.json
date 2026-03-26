@@ -1,0 +1,178 @@
+[
+  {
+    "attack_name": "Heartbleed (OpenSSL)",
+    "event_year": 2014,
+    "ecosystem": "OpenSSL / Internet Infrastructure",
+    "supply_chain_stage": "source",
+    "attack_vector": "Vulnerability (memory leak)",
+    "severity_level": "Critical",
+    "impact_score": 10,
+    "federal_impact": true,
+    "description": "A critical OpenSSL vulnerability exposing sensitive memory data, undermining trust in encrypted communications across global and federal systems."
+  },
+  {
+    "attack_name": "npm / PyPI Typosquatting",
+    "event_year": 2017,
+    "ecosystem": "npm / PyPI",
+    "supply_chain_stage": "source",
+    "attack_vector": "Malicious package injection",
+    "severity_level": "Medium",
+    "impact_score": 6,
+    "federal_impact": true,
+    "description": "Attackers publish lookalike packages to trick developers into installing malicious dependencies, impacting development pipelines."
+  },
+  {
+    "attack_name": "Event-Stream (npm)",
+    "event_year": 2018,
+    "ecosystem": "npm (JavaScript)",
+    "supply_chain_stage": "source",
+    "attack_vector": "Maintainer compromise",
+    "severity_level": "High",
+    "impact_score": 7,
+    "federal_impact": false,
+    "description": "A trusted maintainer introduced a backdoor into a widely used npm package, enabling targeted credential theft."
+  },
+  {
+    "attack_name": "SolarWinds Orion",
+    "event_year": 2020,
+    "ecosystem": "Enterprise IT / Government",
+    "supply_chain_stage": "build",
+    "attack_vector": "CI/CD pipeline compromise",
+    "severity_level": "Critical",
+    "impact_score": 10,
+    "federal_impact": true,
+    "description": "Nation-state actors compromised the build pipeline to distribute signed malicious updates to federal agencies and enterprises."
+  },
+  {
+    "attack_name": "Dependency Confusion",
+    "event_year": 2021,
+    "ecosystem": "npm / PyPI / RubyGems",
+    "supply_chain_stage": "source",
+    "attack_vector": "Namespace confusion",
+    "severity_level": "High",
+    "impact_score": 8,
+    "federal_impact": true,
+    "description": "Malicious packages with higher version numbers were pulled into builds instead of internal dependencies."
+  },
+  {
+    "attack_name": "Log4Shell (Log4j)",
+    "event_year": 2021,
+    "ecosystem": "Java / Logging libraries",
+    "supply_chain_stage": "source",
+    "attack_vector": "Remote code execution vulnerability",
+    "severity_level": "Critical",
+    "impact_score": 10,
+    "federal_impact": true,
+    "description": "A critical vulnerability in a widely used logging library allowed remote code execution across millions of systems."
+  },
+  {
+    "attack_name": "Codecov",
+    "event_year": 2021,
+    "ecosystem": "CI/CD pipelines",
+    "supply_chain_stage": "build",
+    "attack_vector": "Compromised CI script",
+    "severity_level": "High",
+    "impact_score": 8,
+    "federal_impact": true,
+    "description": "Attackers modified a CI script to exfiltrate secrets from build environments."
+  },
+  {
+    "attack_name": "Kaseya VSA",
+    "event_year": 2021,
+    "ecosystem": "MSP / Remote management",
+    "supply_chain_stage": "distribution",
+    "attack_vector": "Ransomware via software update",
+    "severity_level": "Critical",
+    "impact_score": 9,
+    "federal_impact": true,
+    "description": "Compromised software distribution channel used to deploy ransomware across managed service providers."
+  },
+  {
+    "attack_name": "CircleCI Breach",
+    "event_year": 2023,
+    "ecosystem": "CI/CD platform",
+    "supply_chain_stage": "build",
+    "attack_vector": "Token/session theft",
+    "severity_level": "High",
+    "impact_score": 8,
+    "federal_impact": true,
+    "description": "Stolen session tokens enabled access to source code and secrets across multiple organizations."
+  },
+  {
+    "attack_name": "3CX Desktop App",
+    "event_year": 2023,
+    "ecosystem": "Desktop software",
+    "supply_chain_stage": "distribution",
+    "attack_vector": "Trojanized signed update",
+    "severity_level": "Critical",
+    "impact_score": 9,
+    "federal_impact": true,
+    "description": "Malicious code delivered via a trusted, signed software update impacting enterprise endpoints."
+  },
+  {
+    "attack_name": "MOVEit Transfer",
+    "event_year": 2023,
+    "ecosystem": "File transfer systems",
+    "supply_chain_stage": "deployment",
+    "attack_vector": "Zero-day exploitation",
+    "severity_level": "Critical",
+    "impact_score": 9,
+    "federal_impact": true,
+    "description": "Exploitation of a file transfer product to exfiltrate sensitive data from enterprises and government organizations."
+  },
+  {
+    "attack_name": "Microsoft Signing Key Abuse",
+    "event_year": 2023,
+    "ecosystem": "Cloud identity",
+    "supply_chain_stage": "distribution",
+    "attack_vector": "Token forgery",
+    "severity_level": "Critical",
+    "impact_score": 9,
+    "federal_impact": true,
+    "description": "Compromised signing keys enabled attackers to forge authentication tokens and access sensitive systems."
+  },
+  {
+    "attack_name": "XZ Utils Backdoor",
+    "event_year": 2024,
+    "ecosystem": "Linux / Core libraries",
+    "supply_chain_stage": "source",
+    "attack_vector": "Maintainer compromise",
+    "severity_level": "Critical",
+    "impact_score": 10,
+    "federal_impact": true,
+    "description": "A sophisticated backdoor inserted into a core Linux library by a trusted maintainer, targeting SSH access."
+  },
+  {
+    "attack_name": "JetBrains TeamCity",
+    "event_year": 2024,
+    "ecosystem": "CI/CD servers",
+    "supply_chain_stage": "build",
+    "attack_vector": "Server exploitation",
+    "severity_level": "High",
+    "impact_score": 8,
+    "federal_impact": true,
+    "description": "Attackers exploited CI servers to potentially inject malicious code into build artifacts."
+  },
+  {
+    "attack_name": "Trivy GitHub Action Compromise",
+    "event_year": 2026,
+    "ecosystem": "CI/CD / Security tooling",
+    "supply_chain_stage": "build",
+    "attack_vector": "Compromised GitHub Action",
+    "severity_level": "High",
+    "impact_score": 8,
+    "federal_impact": true,
+    "description": "A compromised CI security tool enabled token exfiltration, highlighting risks in third-party pipeline components."
+  },
+  {
+    "attack_name": "LiteLLM Exposure",
+    "event_year": 2026,
+    "ecosystem": "AI/ML tooling",
+    "supply_chain_stage": "deployment",
+    "attack_vector": "API key exposure / misconfiguration",
+    "severity_level": "High",
+    "impact_score": 7,
+    "federal_impact": true,
+    "description": "Exposure of API keys and sensitive data flows in AI orchestration tooling, signaling emerging risks in AI supply chains."
+  }
+]

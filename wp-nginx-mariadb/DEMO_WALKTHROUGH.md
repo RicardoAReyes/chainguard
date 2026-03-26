@@ -57,11 +57,13 @@ View it: **http://localhost:8000/?page_id=8**
 
 ## Act 2 — Load the Skill
 
-In Claude Code, import the `wordpress-content` skill:
+In Claude Code, fetch and install the `wordpress-content` skill by asking Claude directly:
 
 ```
-/import https://skills.sh/jezweb/claude-skills/wordpress-content
+import the wordpress-content skill from https://skills.sh/jezweb/claude-skills/wordpress-content
 ```
+
+Claude will fetch the skill content from the URL and write it to `.claude/commands/wordpress-content.md`, making `/wordpress-content` available as a slash command in this project.
 
 This gives Claude structured knowledge of:
 

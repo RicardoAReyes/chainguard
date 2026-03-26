@@ -48,6 +48,12 @@ header.wp-block-template-part {
 }
 
 /* Post titles */
+.wp-block-post-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
 .wp-block-post-title a {
   color: var(--color-space-cadet);
   text-decoration: none;

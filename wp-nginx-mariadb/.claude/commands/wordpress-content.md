@@ -51,6 +51,6 @@ docker exec wp-nginx-mariadb-app-1 wp post update <ID> \
 
 docker exec wp-nginx-mariadb-app-1 wp post get <ID> \
   --path=/var/www/html \
-  --field=link \
+  --fields=ID,post_title,post_status,post_name \
   --allow-root
 ```
