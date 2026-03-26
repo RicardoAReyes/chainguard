@@ -162,6 +162,56 @@ function ttf_supply_chain_charts_js() {
       });
     }
 
+    // Scatter chart — X: year, Y: supply chain stage
+    var scatterEl = document.getElementById("scatterChart");
+    if (scatterEl) {
+      var scatterStageMap = { source: 1, build: 2, distribution: 3, deployment: 4 };
+      var scatterSeverities = ["Critical", "High", "Medium"];
+      var scatterDatasets = scatterSeverities.map(function(sev, si) {
+        var jitter = 0;
+        return {
+          label: sev,
+          data: attacks
+            .filter(function(a) { return a.severity === sev; })
+            .map(function(a) {
+              var offset = (jitter++ % 3 - 1) * 0.13;
+              return { x: a.year, y: scatterStageMap[a.stage] + offset, name: a.name };
+            }),
+          backgroundColor: severityColors[sev] + "dd",
+          borderColor: severityColors[sev],
+          borderWidth: 1.5,
+          pointRadius: 8,
+          pointHoverRadius: 11
+        };
+      });
+      new window.Chart(scatterEl.getContext("2d"), {
+        type: "scatter",
+        data: { datasets: scatterDatasets },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "top", labels: { color: "#3D405B", font: { size: 13 } } },
+            tooltip: { callbacks: { label: function(ctx) { return " " + ctx.raw.name + " (" + ctx.raw.x + ")"; } } }
+          },
+          scales: {
+            x: {
+              title: { display: true, text: "Year of Incident", color: "#3D405B", font: { size: 13, weight: "600" } },
+              min: 2013, max: 2027,
+              ticks: { color: "#3D405B", stepSize: 1, precision: 0, callback: function(v) { return String(v); } },
+              grid: { color: "rgba(61,64,91,0.08)" }
+            },
+            y: {
+              title: { display: true, text: "Supply Chain Stage", color: "#3D405B", font: { size: 13, weight: "600" } },
+              min: 0.5, max: 4.5,
+              afterBuildTicks: function(axis) { axis.ticks = [{value:1},{value:2},{value:3},{value:4}]; },
+              ticks: { color: "#3D405B", font: { size: 13 }, callback: function(v) { return {1:"Source",2:"Build",3:"Distribution",4:"Deployment"}[v]||""; } },
+              grid: { color: "rgba(61,64,91,0.08)" }
+            }
+          }
+        }
+      });
+    }
+
   }
 
   if (document.readyState === "loading") {
