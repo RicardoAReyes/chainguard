@@ -1,0 +1,73 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "sbom-sha256:d06c0038407b948fbefee7788b7ba004ce971b8db68df35a315a20eed1a3250c",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-03-24T21:13:22Z",
+    "creators": [
+      "Tool: apko (v1.1.15+dirty)",
+      "Organization: Chainguard, Inc"
+    ],
+    "licenseListVersion": "3.27"
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
+  "documentDescribes": [
+    "SPDXRef-Package-sha256-d06c0038407b948fbefee7788b7ba004ce971b8db68df35a315a20eed1a3250c"
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-sha256-d06c0038407b948fbefee7788b7ba004ce971b8db68df35a315a20eed1a3250c",
+      "name": "sha256:d06c0038407b948fbefee7788b7ba004ce971b8db68df35a315a20eed1a3250c",
+      "versionInfo": "sha256:d06c0038407b948fbefee7788b7ba004ce971b8db68df35a315a20eed1a3250c",
+      "filesAnalyzed": false,
+      "description": "Multi-arch image index",
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: Chainguard, Inc.",
+      "sourceInfo": "Generated at image build time by apko",
+      "primaryPackagePurpose": "CONTAINER",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d06c0038407b948fbefee7788b7ba004ce971b8db68df35a315a20eed1a3250c"
+        }
+      ],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:oci/ghost@sha256:d06c0038407b948fbefee7788b7ba004ce971b8db68df35a315a20eed1a3250c?mediaType=application%2Fvnd.oci.image.index.v1%2Bjson",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-sha256-e3d9c60ea5477918ac3fdfc40fd1047e03c93923bdcd235228b057d7d5ec6686",
+      "name": "sha256:e3d9c60ea5477918ac3fdfc40fd1047e03c93923bdcd235228b057d7d5ec6686",
+      "versionInfo": "sha256:e3d9c60ea5477918ac3fdfc40fd1047e03c93923bdcd235228b057d7d5ec6686",
+      "filesAnalyzed": false,
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: Chainguard, Inc.",
+      "primaryPackagePurpose": "CONTAINER",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e3d9c60ea5477918ac3fdfc40fd1047e03c93923bdcd235228b057d7d5ec6686"
+        }
+      ],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:oci/ghost@sha256:e3d9c60ea5477918ac3fdfc40fd1047e03c93923bdcd235228b057d7d5ec6686?arch=amd64\u0026mediaType=application%2Fvnd.oci.image.manifest.v1%2Bjson\u0026os=linux",
+          "referenceType": "purl"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-sha256-d06c0038407b948fbefee7788b7ba004ce971b8db68df35a315a20eed1a3250c",
+      "relationshipType": "VARIANT_OF",
+      "relatedSpdxElement": "SPDXRef-Package-sha256-e3d9c60ea5477918ac3fdfc40fd1047e03c93923bdcd235228b057d7d5ec6686"
+    }
+  ]
+}

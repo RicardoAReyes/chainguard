@@ -16,6 +16,11 @@ grafana/data/
 # Grype scan results (timestamped JSON artifacts)
 scans/
 
+# Ghost build artifacts (large binaries, private signing key)
+ghost.tar
+packages/
+melange.rsa
+
 # macOS
 .DS_Store
 

@@ -68,3 +68,87 @@ So your WordPress project structure reflects this correctly:
   - Packages Chainguard has curated → served with SLSA attestations
   - Everything else → proxied from upstream npm transparently
 
+
+# OS Packages and App Packages
+┌────────────────────────────┬──────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │         Repository         │        Access        │                                               Contains                                               │
+  ├────────────────────────────┼──────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ packages.wolfi.dev/os      │ Free / public        │ Core OS packages — nodejs-22, npm, glibc, busybox, etc.                                              │
+  ├────────────────────────────┼──────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ packages.cgr.dev/extras    │ Chainguard account   │ Extended packages — wordpress, wordpress-oci-entrypoint, wp-cli, and other app-level packages        │
+  │                            │ required             │ Chainguard maintains but keeps out of the public Wolfi repo                                          │
+  ├────────────────────────────┼──────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ cgr.dev/chainguard-private │ Chainguard account   │ Pre-built hardened container images — what you pull in docker-compose.yaml                           │
+  │                            │ required             │                                                                                                      │
+  └────────────────────────────┴──────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+  Ghost specifically — likely none. Here's why:
+
+  packages.cgr.dev/extras contains Chainguard-curated app packages. Looking at what the WordPress apko.yaml pulls from there:
+
+  ┌──────────────────────────┬────────────────────────────────────────────────────────────────┐
+  │         Package          │                           What it is                           │
+  ├──────────────────────────┼────────────────────────────────────────────────────────────────┤
+  │ wordpress                │ WordPress core files, pre-packaged by Chainguard               │
+  ├──────────────────────────┼────────────────────────────────────────────────────────────────┤
+  │ wordpress-oci-entrypoint │ Chainguard's custom entrypoint script for WordPress containers │
+  ├──────────────────────────┼────────────────────────────────────────────────────────────────┤
+  │ wp-cli                   │ WP-CLI tool, re-packaged by Chainguard                         │
+  └──────────────────────────┴────────────────────────────────────────────────────────────────┘
+
+  These exist because Chainguard has specifically built and maintains WordPress as a product offering.
+
+  Ghost is not a Chainguard product — there's no ghost or ghost-oci-entrypoint package in extras. Everything Ghost needs is either:
+
+  ┌──────────────────────────┬──────────────────────────────────────────────────────────────────────┐
+  │        Dependency        │                                Source                                │
+  ├──────────────────────────┼──────────────────────────────────────────────────────────────────────┤
+  │ nodejs-22, npm           │ packages.wolfi.dev/os (public)                                       │
+  ├──────────────────────────┼──────────────────────────────────────────────────────────────────────┤
+  │ sqlite-libs              │ packages.wolfi.dev/os (public)                                       │
+  ├──────────────────────────┼──────────────────────────────────────────────────────────────────────┤
+  │ build-base, python3, gcc │ packages.wolfi.dev/os (public, needed in melange for native modules) │
+  ├──────────────────────────┼──────────────────────────────────────────────────────────────────────┤
+  │ Ghost itself             │ npm (npm install ghost-cli) — goes into the melange recipe           │
+  └──────────────────────────┴──────────────────────────────────────────────────────────────────────┘
+
+  So the Ghost apko.yaml stays pointing only at packages.wolfi.dev/os. You'd only add packages.cgr.dev/extras if Chainguard were to officially package Ghost
+  there in the future — or if you packaged it yourself and hosted it on a private extras-style repo.
+
+  Pipeline steps:
+
+  ┌─────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────┐
+  │        Step         │                                        What it does                                        │
+  ├─────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ fetch               │ Downloads Ghost source from GitHub tag v6.23.0, verifies SHA256 — no npm registry involved │
+  ├─────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ npm ci --workspaces │ Installs all monorepo workspace deps using Wolfi's npm                                     │
+  ├─────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ npm run build       │ Compiles Ghost's TypeScript/assets using Wolfi's nodejs-22                                 │
+  ├─────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Install to destdir  │ Copies only the Ghost CMS app + production deps into the APK payload                       │
+  ├─────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ strip               │ Strips debug symbols from native .node binaries — smaller image                            │
+  └─────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────┘
+
+  Build dependencies — 100% from packages.wolfi.dev/os:
+  - nodejs-22, npm — runtime + build
+  - build-base, python3, git — required by node-gyp to compile sqlite3 native module
+
+  Subpackage — ghost-config-sqlite ships a ready-to-use SQLite config for testing, separate from the main package so it can be swapped for a MySQL config in
+  production.
+
+  To build it:
+  melange build ghost.melange.yaml --arch arm64 --out-dir ./packages
+
+
+                                                                                                                                                                                                                   
+⏺ Here's what's relevant to the Ghost build:
+                                                                                                                                                                                                                 
+  ┌────────────┬──────────────┬─────────┬─────────────────────────────────────────────────┐                                                                                                                      
+  │   Image    │     Tag      │  Size   │                      Notes                      │
+  ├────────────┼──────────────┼─────────┼─────────────────────────────────────────────────┤                                                                                                                      
+  │ ghost      │ latest-amd64 │ 1.05 GB │ Built today via apko (x86_64 emulated on arm64) │
+  ├────────────┼──────────────┼─────────┼─────────────────────────────────────────────────┤
+  │ ghost-base │ latest-arm64 │ 216 MB  │ Earlier test — base only, no Ghost app          │                                                                                                                      
+  └────────────┴──────────────┴─────────┴─────────────────────────────────────────────────┘   

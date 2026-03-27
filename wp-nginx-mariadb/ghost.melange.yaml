@@ -1,0 +1,109 @@
+package:
+  name: ghost
+  version: 6.23.0
+  epoch: 0
+  description: Ghost — Turn your audience into a business
+  copyright:
+    - license: MIT
+      paths:
+        - "*"
+  dependencies:
+    runtime:
+      - nodejs-22
+      - sqlite-libs
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      # Base system
+      - wolfi-baselayout
+      - busybox
+      - ca-certificates-bundle
+      # Node.js toolchain from Wolfi
+      - nodejs-22
+      - npm
+      # Native module compilation — sqlite3 uses node-gyp
+      - build-base
+      - python3
+      # Python 3.12+ removed distutils; setuptools provides the shim for node-gyp
+      - py3-setuptools
+
+pipeline:
+  # Step 1 — download the Ghost npm package as a tarball and extract it.
+  # npm 11 cannot resolve ghost's file:components/*.tgz deps during a plain
+  # `npm install ghost@x.x.x` because those bundled tarballs are inside the
+  # package itself and aren't on disk yet when npm resolves deps.  By using
+  # `npm pack` + manual extraction we ensure components/ exists before npm runs.
+  - runs: |
+      mkdir -p /tmp/ghost-src
+      npm pack ghost@${{package.version}} --pack-destination /tmp/ --no-audit --no-fund
+      tar xzf /tmp/ghost-${{package.version}}.tgz -C /tmp/ghost-src --strip-components=1
+
+  # Step 2 — install Ghost's production dependencies.
+  # We are now inside the extracted ghost package directory where
+  # components/tryghost-*.tgz are present, so file: refs resolve correctly.
+  - runs: |
+      cd /tmp/ghost-src
+      npm install \
+        --ignore-scripts \
+        --no-audit \
+        --no-fund \
+        --legacy-peer-deps \
+        --omit=dev
+
+  # Step 3 — compile sqlite3 native module using Wolfi build-base + python3.
+  # Pre-built binaries in the npm package target glibc; rebuild from source
+  # inside the Wolfi sandbox so it links against the correct system libs.
+  - runs: |
+      SQLITE=$(find /tmp/ghost-src/node_modules -maxdepth 5 -name "sqlite3" -type d | head -1)
+      cd "$SQLITE"
+      npm run install
+
+  # Step 4 — assemble destdir.
+  # Ghost's index.js is at the package root, matching the apko entrypoint.
+  - runs: |
+      DESTDIR="${{targets.destdir}}/var/lib/ghost"
+      mkdir -p "$DESTDIR"
+      cp -r /tmp/ghost-src/. "$DESTDIR/"
+      # Pre-create Ghost content directories (bind-mounted or writable at runtime)
+      mkdir -p "$DESTDIR/content"/{data,images,themes,apps,logs,settings}
+
+  # Step 5 — strip debug symbols from native .node binaries
+  - runs: |
+      find "${{targets.destdir}}" -name "*.node" -exec strip --strip-debug {} \; 2>/dev/null || true
+
+subpackages:
+  - name: ghost-config-sqlite
+    description: Default Ghost config using SQLite (for testing)
+    pipeline:
+      - runs: |
+          mkdir -p "${{targets.subpkgdir}}/var/lib/ghost"
+          cat > "${{targets.subpkgdir}}/var/lib/ghost/config.production.json" <<'EOF'
+          {
+            "url": "http://localhost:2368",
+            "server": {
+              "port": 2368,
+              "host": "0.0.0.0"
+            },
+            "database": {
+              "client": "sqlite3",
+              "connection": {
+                "filename": "/var/lib/ghost/content/data/ghost.db"
+              }
+            },
+            "mail": {
+              "transport": "Direct"
+            },
+            "logging": {
+              "transports": ["stdout"]
+            },
+            "process": "local",
+            "paths": {
+              "contentPath": "/var/lib/ghost/content"
+            }
+          }
+          EOF
