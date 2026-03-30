@@ -8,7 +8,7 @@
     "chainguard"
   ],
   "schemaVersion": 40,
-  "version": 8,
+  "version": 9,
   "refresh": "30s",
   "time": {
     "from": "now-6h",
@@ -3264,8 +3264,8 @@
           "options": {
             "renameByName": {
               "Field": "Image",
-              "Last Not Null": "Chainguard",
-              "Last Not Null 1": "DHI"
+              "grype_scan_total": "Chainguard",
+              "grype_dhi_scan_total": "DHI"
             },
             "excludeByName": {},
             "indexByName": {}
@@ -3366,36 +3366,6 @@
             "matcher": {
               "id": "byName",
               "options": "DHI"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#ef4444",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "A"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#22c55e",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "B"
             },
             "properties": [
               {
