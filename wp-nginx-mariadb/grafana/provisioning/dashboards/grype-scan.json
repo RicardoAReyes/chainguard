@@ -8,7 +8,7 @@
     "chainguard"
   ],
   "schemaVersion": 40,
-  "version": 10,
+  "version": 11,
   "refresh": "30s",
   "time": {
     "from": "now-6h",
@@ -3208,12 +3208,12 @@
     {
       "id": 31,
       "type": "barchart",
-      "title": "Chainguard vs DHI \u2014 Total CVEs by Image",
+      "title": "Docker Hardened Images (DHI) \u2014 Total CVEs by Image",
       "gridPos": {
         "x": 0,
-        "y": 93,
+        "y": 88,
         "w": 24,
-        "h": 12
+        "h": 10
       },
       "datasource": {
         "type": "prometheus",
@@ -3226,19 +3226,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sort_desc(label_replace(grype_scan_total, \"type\", \"Chainguard\", \"\", \"\") or label_replace(grype_dhi_scan_total, \"type\", \"DHI\", \"\", \"\"))",
+          "expr": "grype_dhi_scan_total",
           "legendFormat": "{{image}}",
           "instant": true
         }
       ],
       "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {
-            "mode": "columns",
-            "valueLabel": "type"
-          }
-        },
         {
           "id": "reduce",
           "options": {
@@ -3250,25 +3243,10 @@
           }
         },
         {
-          "id": "organize",
-          "options": {
-            "renameByName": {
-              "Field": "Image"
-            },
-            "excludeByName": {
-              "image": true,
-              "__name__": true,
-              "instance": true,
-              "job": true
-            }
-          }
-        },
-        {
           "id": "sortBy",
           "options": {
             "fields": [
               {
-                "displayName": "DHI",
                 "desc": true
               }
             ]
@@ -3276,38 +3254,33 @@
         }
       ],
       "options": {
-        "xField": "Image",
+        "xField": "Field",
+        "xTickLabelRotation": -45,
+        "xTickLabelSpacing": 0,
         "stacking": "none",
         "groupWidth": 0.7,
         "barWidth": 0.9,
+        "barRadius": 0,
         "fillOpacity": 80,
         "gradientMode": "none",
+        "orientation": "auto",
         "tooltipOptions": {
-          "mode": "multi",
+          "mode": "single",
           "sort": "none"
         },
         "legend": {
-          "displayMode": "list",
+          "displayMode": "hidden",
           "placement": "bottom",
-          "showLegend": true,
-          "calcs": []
-        },
-        "orientation": "auto",
-        "xTickLabelRotation": -45,
-        "xTickLabelSpacing": 0,
-        "barRadius": 0
+          "showLegend": false
+        }
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "fixedColor": "#ef4444",
+            "mode": "fixed"
           },
           "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "CVE Count",
-            "axisPlacement": "auto",
             "fillOpacity": 80,
             "gradientMode": "none",
             "hideFrom": {
@@ -3315,61 +3288,119 @@
               "tooltip": false,
               "viz": false
             },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
+            "lineWidth": 1
           },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#ef4444",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Chainguard"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#22c55e",
-                  "mode": "fixed"
-                }
-              }
-            ]
+        "overrides": []
+      }
+    },
+    {
+      "id": 32,
+      "type": "barchart",
+      "title": "Chainguard \u2014 Total CVEs by Image",
+      "gridPos": {
+        "x": 0,
+        "y": 100,
+        "w": 24,
+        "h": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
           },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "DHI"
-            },
-            "properties": [
+          "expr": "grype_scan_total",
+          "legendFormat": "{{image}}",
+          "instant": true
+        }
+      ],
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "reducers": [
+              "lastNotNull"
+            ],
+            "includeTimeField": false,
+            "labelsToFields": false
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": [
               {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#ef4444",
-                  "mode": "fixed"
-                }
+                "desc": true
               }
             ]
           }
-        ]
+        }
+      ],
+      "options": {
+        "xField": "Field",
+        "xTickLabelRotation": -45,
+        "xTickLabelSpacing": 0,
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.9,
+        "barRadius": 0,
+        "fillOpacity": 80,
+        "gradientMode": "none",
+        "orientation": "auto",
+        "tooltipOptions": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom",
+          "showLegend": false
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#22c55e",
+            "mode": "fixed"
+          },
+          "custom": {
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#22c55e",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
       }
     }
   ]
