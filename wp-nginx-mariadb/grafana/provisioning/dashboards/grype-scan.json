@@ -8,7 +8,7 @@
     "chainguard"
   ],
   "schemaVersion": 40,
-  "version": 9,
+  "version": 10,
   "refresh": "30s",
   "time": {
     "from": "now-6h",
@@ -3221,27 +3221,24 @@
       },
       "targets": [
         {
-          "expr": "grype_scan_total",
-          "legendFormat": "{{image}}",
-          "instant": true,
           "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
-          }
-        },
-        {
-          "expr": "grype_dhi_scan_total",
+          },
+          "expr": "sort_desc(label_replace(grype_scan_total, \"type\", \"Chainguard\", \"\", \"\") or label_replace(grype_dhi_scan_total, \"type\", \"DHI\", \"\", \"\"))",
           "legendFormat": "{{image}}",
-          "instant": true,
-          "refId": "B",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          }
+          "instant": true
         }
       ],
       "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns",
+            "valueLabel": "type"
+          }
+        },
         {
           "id": "reduce",
           "options": {
@@ -3253,22 +3250,17 @@
           }
         },
         {
-          "id": "joinByField",
-          "options": {
-            "byField": "Field",
-            "mode": "outer"
-          }
-        },
-        {
           "id": "organize",
           "options": {
             "renameByName": {
-              "Field": "Image",
-              "grype_scan_total": "Chainguard",
-              "grype_dhi_scan_total": "DHI"
+              "Field": "Image"
             },
-            "excludeByName": {},
-            "indexByName": {}
+            "excludeByName": {
+              "image": true,
+              "__name__": true,
+              "instance": true,
+              "job": true
+            }
           }
         },
         {
