@@ -8,7 +8,7 @@
     "chainguard"
   ],
   "schemaVersion": 40,
-  "version": 12,
+  "version": 13,
   "refresh": "30s",
   "time": {
     "from": "now-6h",
@@ -3243,6 +3243,10 @@
           }
         },
         {
+          "id": "merge",
+          "options": {}
+        },
+        {
           "id": "sortBy",
           "options": {
             "fields": [
@@ -3341,6 +3345,10 @@
             "includeTimeField": false,
             "labelsToFields": false
           }
+        },
+        {
+          "id": "merge",
+          "options": {}
         },
         {
           "id": "sortBy",
