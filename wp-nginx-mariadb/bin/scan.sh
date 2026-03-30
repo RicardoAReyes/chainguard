@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # bin/scan.sh — Run Grype vulnerability scans on all project container images.
 #
-# Scanner: cgr.dev/chainguard-private/grype:latest (run via Docker)
+# Scans two sets of images in parallel:
+#   CG  — Chainguard hardened images (project runtime)
+#   DHI — Docker Hardened Images (comparison baseline)
 #
-# Usage:
-#   bash bin/scan.sh
+# Scanner: cgr.dev/chainguard-private/grype:latest
 #
 # Results are saved to:
-#   scans/<image>/<YYYYMMDDTHHMMSSZ>.json
+#   scans/<name>/<YYYYMMDDTHHMMSSZ>.json        (Chainguard)
+#   scans/<name>/dhi_<YYYYMMDDTHHMMSSZ>.json    (DHI)
 
 set -euo pipefail
 
@@ -27,7 +29,8 @@ grype() {
     "$@"
 }
 
-IMAGES=(
+# Chainguard hardened images (project runtime)
+CG_IMAGES=(
   "wordpress:wordpress-custom:latest"
   "nginx:cgr.dev/chainguard-private/nginx:latest"
   "mariadb:cgr.dev/chainguard-private/mariadb:latest"
@@ -37,22 +40,48 @@ IMAGES=(
   "grafana:cgr.dev/chainguard-private/grafana:latest"
 )
 
+# Docker Hardened Images — upstream equivalents for comparison.
+# Update these to match your actual DHI image references.
+DHI_IMAGES=(
+  "wordpress:wordpress:latest"
+  "nginx:nginx:latest"
+  "mariadb:mariadb:latest"
+  "node:node:lts"
+  "grype:anchore/grype:latest"
+  "prometheus:prom/prometheus:latest"
+  "grafana:grafana/grafana:latest"
+)
+
 log "Timestamp: ${TS}"
-log "Scanning ${#IMAGES[@]} images in parallel..."
+log "Scanning ${#CG_IMAGES[@]} Chainguard + ${#DHI_IMAGES[@]} DHI images in parallel..."
 echo ""
 
 pids=()
-for entry in "${IMAGES[@]}"; do
+
+log "  [CG] Chainguard images:"
+for entry in "${CG_IMAGES[@]}"; do
   name="${entry%%:*}"
   image="${entry#*:}"
   out="${SCANS_DIR}/${name}/${TS}.json"
   mkdir -p "${SCANS_DIR}/${name}"
-  log "  → ${image}"
+  log "    → ${image}"
   grype "${image}" --output json 2>/dev/null > "${out}" &
   pids+=($!)
 done
 
-# Wait for all scans and check exit codes
+echo ""
+log "  [DHI] Docker Hardened Images:"
+for entry in "${DHI_IMAGES[@]}"; do
+  name="${entry%%:*}"
+  image="${entry#*:}"
+  out="${SCANS_DIR}/${name}/dhi_${TS}.json"
+  mkdir -p "${SCANS_DIR}/${name}"
+  log "    → ${image}"
+  grype "${image}" --output json 2>/dev/null > "${out}" &
+  pids+=($!)
+done
+
+# Wait for all scans
 failed=0
 for pid in "${pids[@]}"; do
   wait "${pid}" || { log "WARNING: a scan process failed (pid ${pid})"; failed=1; }
@@ -60,30 +89,50 @@ done
 
 echo ""
 if [[ "${failed}" -eq 0 ]]; then
-  log "All scans complete. Results saved to scans/<image>/${TS}.json"
+  log "All scans complete."
+  log "  CG  results: scans/<image>/${TS}.json"
+  log "  DHI results: scans/<image>/dhi_${TS}.json"
 else
   log "One or more scans failed — check output above."
   exit 1
 fi
 
-# Print summary table
+# Summary table — Chainguard
 echo ""
-printf "%-12s  %8s  %8s  %8s  %8s  %8s  %8s\n" "IMAGE" "CRITICAL" "HIGH" "MEDIUM" "LOW" "UNKNOWN" "TOTAL"
+printf "%-12s  %8s  %8s  %8s  %8s  %8s  %8s\n" "IMAGE [CG]" "CRITICAL" "HIGH" "MEDIUM" "LOW" "UNKNOWN" "TOTAL"
 printf "%-12s  %8s  %8s  %8s  %8s  %8s  %8s\n" "------------" "--------" "--------" "--------" "--------" "--------" "--------"
-for entry in "${IMAGES[@]}"; do
+for entry in "${CG_IMAGES[@]}"; do
   name="${entry%%:*}"
   out="${SCANS_DIR}/${name}/${TS}.json"
   jq -r --arg name "${name}" '
     [ .matches[] | .vulnerability.severity ] |
-    {
-      name: $name,
+    { name: $name,
       critical: (map(select(. == "Critical")) | length),
       high:     (map(select(. == "High"))     | length),
       medium:   (map(select(. == "Medium"))   | length),
       low:      (map(select(. == "Low"))      | length),
       unknown:  (map(select(. == "Unknown"))  | length),
-      total:    length
-    } |
+      total:    length } |
+    "\(.name)  \(.critical)  \(.high)  \(.medium)  \(.low)  \(.unknown)  \(.total)"
+  ' "${out}" | awk '{printf "%-12s  %8s  %8s  %8s  %8s  %8s  %8s\n", $1, $2, $3, $4, $5, $6, $7}'
+done
+
+# Summary table — DHI
+echo ""
+printf "%-12s  %8s  %8s  %8s  %8s  %8s  %8s\n" "IMAGE [DHI]" "CRITICAL" "HIGH" "MEDIUM" "LOW" "UNKNOWN" "TOTAL"
+printf "%-12s  %8s  %8s  %8s  %8s  %8s  %8s\n" "------------" "--------" "--------" "--------" "--------" "--------" "--------"
+for entry in "${DHI_IMAGES[@]}"; do
+  name="${entry%%:*}"
+  out="${SCANS_DIR}/${name}/dhi_${TS}.json"
+  jq -r --arg name "${name}" '
+    [ .matches[] | .vulnerability.severity ] |
+    { name: $name,
+      critical: (map(select(. == "Critical")) | length),
+      high:     (map(select(. == "High"))     | length),
+      medium:   (map(select(. == "Medium"))   | length),
+      low:      (map(select(. == "Low"))      | length),
+      unknown:  (map(select(. == "Unknown"))  | length),
+      total:    length } |
     "\(.name)  \(.critical)  \(.high)  \(.medium)  \(.low)  \(.unknown)  \(.total)"
   ' "${out}" | awk '{printf "%-12s  %8s  %8s  %8s  %8s  %8s  %8s\n", $1, $2, $3, $4, $5, $6, $7}'
 done

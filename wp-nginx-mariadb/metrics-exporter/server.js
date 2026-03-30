@@ -14,7 +14,20 @@ function getLatestScanFile(image) {
   const dir = path.join(SCANS_DIR, image);
   try {
     const files = fs.readdirSync(dir)
-      .filter(f => f.endsWith('.json'))
+      .filter(f => f.endsWith('.json') && !f.startsWith('dhi_'))
+      .sort()
+      .reverse();
+    return files.length > 0 ? path.join(dir, files[0]) : null;
+  } catch {
+    return null;
+  }
+}
+
+function getLatestDhiScanFile(image) {
+  const dir = path.join(SCANS_DIR, image);
+  try {
+    const files = fs.readdirSync(dir)
+      .filter(f => f.startsWith('dhi_') && f.endsWith('.json'))
       .sort()
       .reverse();
     return files.length > 0 ? path.join(dir, files[0]) : null;
@@ -64,6 +77,37 @@ function metrics() {
       const counts = parseScan(file);
       const total  = SEVERITIES.reduce((s, k) => s + counts[k], 0);
       lines.push(`grype_scan_total{image="${image}"} ${total}`);
+    } catch { /* already logged */ }
+  }
+
+  lines.push('');
+  lines.push('# HELP grype_dhi_scan_vulnerabilities Vulnerability count by image and severity (DHI latest scan)');
+  lines.push('# TYPE grype_dhi_scan_vulnerabilities gauge');
+
+  for (const image of IMAGES) {
+    const file = getLatestDhiScanFile(image);
+    if (!file) continue;
+    try {
+      const counts = parseScan(file);
+      for (const sev of SEVERITIES) {
+        lines.push(`grype_dhi_scan_vulnerabilities{image="${image}",severity="${sev}"} ${counts[sev]}`);
+      }
+    } catch (e) {
+      console.error(`[exporter] error parsing ${file}: ${e.message}`);
+    }
+  }
+
+  lines.push('');
+  lines.push('# HELP grype_dhi_scan_total Total vulnerability count by image (DHI latest scan)');
+  lines.push('# TYPE grype_dhi_scan_total gauge');
+
+  for (const image of IMAGES) {
+    const file = getLatestDhiScanFile(image);
+    if (!file) continue;
+    try {
+      const counts = parseScan(file);
+      const total  = SEVERITIES.reduce((s, k) => s + counts[k], 0);
+      lines.push(`grype_dhi_scan_total{image="${image}"} ${total}`);
     } catch { /* already logged */ }
   }
 
