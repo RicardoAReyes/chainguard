@@ -108,9 +108,16 @@ Run Grype scans on all container images on demand:
 bash bin/scan.sh
 ```
 
-Results are saved to `scans/<image>/<YYYYMMDDTHHMMSSZ>.json`. The metrics-exporter reads these files and exposes them as Prometheus metrics, which Grafana visualises in the **Grype Security Scan Report** dashboard.
+The scanner runs **two sets of images in parallel**:
+
+| Set | Images | Output |
+|---|---|---|
+| Chainguard (CG) | 7 hardened images | `scans/<image>/<timestamp>.json` |
+| Docker Hardened Images (DHI) | 7 upstream equivalents | `scans/<image>/dhi_<timestamp>.json` |
 
 Scanned images: `wordpress`, `nginx`, `mariadb`, `node`, `grype`, `prometheus`, `grafana`
+
+A summary table is printed for both sets at the end of each run. Results feed the metrics-exporter → Prometheus → Grafana pipeline automatically.
 
 ## Grafana Dashboard
 
@@ -118,21 +125,47 @@ The CVE dashboard is embedded in WordPress at **http://localhost:8000/security-s
 
 It is also accessible directly at **http://localhost:8000/grafana/** (proxied through nginx, same-origin).
 
+### Dashboard panels
+
+| Panel | Type | Description |
+|---|---|---|
+| 1–4, 8–10 | Stat | Per-image total CVE count (Chainguard) |
+| 5 | Bar gauge | All images × all severities (Chainguard) |
+| 6 | Table | Full CVE breakdown by image |
+| 7 | Time series | CVE trend over time |
+| 11–17 | Bar gauge | Per-image severity breakdown (Chainguard) |
+| 21–27 | Bar gauge | Per-image severity breakdown (DHI) |
+| 28 | Stat | Total CVEs — Chainguard (all images) |
+| 29 | Stat | Total CVEs — DHI (all images) |
+| 30 | Stat | % fewer CVEs with Chainguard |
+| 31 | Bar chart | DHI total CVEs by image (red, A–Z) |
+| 32 | Bar chart | Chainguard total CVEs by image (green, A–Z) |
+
+The **Security Scan Report** WordPress page embeds all panels side by side: Chainguard left, DHI right — making the vulnerability reduction immediately visible.
+
 ## Theme Build
 
 The `twentytwentyfour-child` theme uses `@wordpress/scripts` (webpack) to compile `src/index.js` into `build/index.js`.
 
 ```
 src/index.js
-  ├── alpinejs       → lightweight interactivity
-  ├── chart.js       → data visualization
-  └── motion         → animations and scroll effects
+  ├── alpinejs   → FAQ accordion on Our Services page (x-data, @click, x-show, x-transition)
+  ├── chart.js   → supply chain attack charts (bubble, bar, scatter)
+  └── motion     → scroll-entrance fade-in animations sitewide
 ```
 
 | Source | Packages | Registry |
 |---|---|---|
 | Runtime libs | `alpinejs`, `chart.js`, `motion` | `libraries.cgr.dev/javascript` |
 | Build tooling | `@wordpress/scripts` + 749 deps | `registry.npmjs.org` |
+
+### Alpine.js — interactive FAQ accordion
+
+The **Our Services** page (`/our-services/`) uses Alpine.js directives for a click-to-expand FAQ section covering hardened images, Grype, SLSA provenance, drop-in compatibility, and JS supply chain security.
+
+### Motion — scroll-entrance animations
+
+`window.motionAnimate` is applied sitewide via an `IntersectionObserver`. Headings, paragraphs, lists, and block groups fade in from 24 px below as they enter the viewport (0.5 s cubic-bezier ease). Skipped on the security-scan-report page to avoid interfering with Grafana iframes.
 
 ## Architecture Diagram
 
@@ -176,7 +209,9 @@ wp-nginx-mariadb/
 │       ├── datasources/         # Prometheus datasource
 │       └── dashboards/          # Grype scan report dashboard
 ├── scans/                       # Grype JSON results (git ignored)
-│   └── <image>/<timestamp>.json
+│   └── <image>/
+│       ├── <timestamp>.json     # Chainguard scan
+│       └── dhi_<timestamp>.json # Docker Hardened Image scan
 └── themes/
     └── twentytwentyfour-child/
         ├── src/index.js         # JS entry point
