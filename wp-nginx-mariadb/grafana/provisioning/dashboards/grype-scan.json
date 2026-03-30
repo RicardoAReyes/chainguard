@@ -8,7 +8,7 @@
     "chainguard"
   ],
   "schemaVersion": 40,
-  "version": 14,
+  "version": 15,
   "refresh": "30s",
   "time": {
     "from": "now-6h",
@@ -3291,7 +3291,22 @@
           "instant": true
         }
       ],
-      "transformations": [],
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "reducers": [
+              "lastNotNull"
+            ],
+            "includeTimeField": false,
+            "labelsToFields": false
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
       "options": {
         "xField": "Field",
         "xTickLabelRotation": -45,
@@ -3429,7 +3444,22 @@
           "instant": true
         }
       ],
-      "transformations": [],
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "reducers": [
+              "lastNotNull"
+            ],
+            "includeTimeField": false,
+            "labelsToFields": false
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
       "options": {
         "xField": "Field",
         "xTickLabelRotation": -45,
