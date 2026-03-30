@@ -4,7 +4,7 @@
   "description": "Container image vulnerability scan results from Grype via Chainguard images",
   "tags": ["security", "grype", "chainguard"],
   "schemaVersion": 40,
-  "version": 2,
+  "version": 3,
   "refresh": "30s",
   "time": { "from": "now-6h", "to": "now" },
   "timepicker": {},
@@ -338,7 +338,7 @@
     },
     {
       "id": 11,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "wordpress-custom — CVEs by Severity",
       "gridPos": { "x": 0, "y": 18, "w": 12, "h": 9 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -349,10 +349,9 @@
         { "expr": "grype_scan_vulnerabilities{image=\"wordpress\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
         { "expr": "grype_scan_vulnerabilities{image=\"wordpress\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
       ],
-      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
-      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true, "minVizHeight": 16 },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short", "min": 0, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] } },
         "overrides": [
           { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
           { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
@@ -364,7 +363,7 @@
     },
     {
       "id": 12,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "nginx — CVEs by Severity",
       "gridPos": { "x": 12, "y": 18, "w": 12, "h": 9 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -375,10 +374,9 @@
         { "expr": "grype_scan_vulnerabilities{image=\"nginx\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
         { "expr": "grype_scan_vulnerabilities{image=\"nginx\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
       ],
-      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
-      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true, "minVizHeight": 16 },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short", "min": 0, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] } },
         "overrides": [
           { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
           { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
@@ -390,7 +388,7 @@
     },
     {
       "id": 13,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "mariadb — CVEs by Severity",
       "gridPos": { "x": 0, "y": 27, "w": 12, "h": 9 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -401,10 +399,9 @@
         { "expr": "grype_scan_vulnerabilities{image=\"mariadb\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
         { "expr": "grype_scan_vulnerabilities{image=\"mariadb\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
       ],
-      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
-      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true, "minVizHeight": 16 },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short", "min": 0, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] } },
         "overrides": [
           { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
           { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
@@ -416,7 +413,7 @@
     },
     {
       "id": 14,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "node — CVEs by Severity",
       "gridPos": { "x": 12, "y": 27, "w": 12, "h": 9 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -427,10 +424,9 @@
         { "expr": "grype_scan_vulnerabilities{image=\"node\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
         { "expr": "grype_scan_vulnerabilities{image=\"node\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
       ],
-      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
-      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true, "minVizHeight": 16 },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short", "min": 0, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] } },
         "overrides": [
           { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
           { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
@@ -442,7 +438,7 @@
     },
     {
       "id": 15,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "grype — CVEs by Severity",
       "gridPos": { "x": 0, "y": 36, "w": 8, "h": 9 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -453,10 +449,9 @@
         { "expr": "grype_scan_vulnerabilities{image=\"grype\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
         { "expr": "grype_scan_vulnerabilities{image=\"grype\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
       ],
-      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
-      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true, "minVizHeight": 16 },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short", "min": 0, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] } },
         "overrides": [
           { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
           { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
@@ -468,7 +463,7 @@
     },
     {
       "id": 16,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "prometheus — CVEs by Severity",
       "gridPos": { "x": 8, "y": 36, "w": 8, "h": 9 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -479,10 +474,9 @@
         { "expr": "grype_scan_vulnerabilities{image=\"prometheus\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
         { "expr": "grype_scan_vulnerabilities{image=\"prometheus\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
       ],
-      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
-      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true, "minVizHeight": 16 },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short", "min": 0, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] } },
         "overrides": [
           { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
           { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
@@ -494,7 +488,7 @@
     },
     {
       "id": 17,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "grafana — CVEs by Severity",
       "gridPos": { "x": 16, "y": 36, "w": 8, "h": 9 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -505,10 +499,9 @@
         { "expr": "grype_scan_vulnerabilities{image=\"grafana\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
         { "expr": "grype_scan_vulnerabilities{image=\"grafana\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
       ],
-      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
-      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true, "minVizHeight": 16 },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short", "min": 0, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] } },
         "overrides": [
           { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
           { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
