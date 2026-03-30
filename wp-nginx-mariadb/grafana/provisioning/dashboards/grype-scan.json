@@ -8,7 +8,7 @@
     "chainguard"
   ],
   "schemaVersion": 40,
-  "version": 7,
+  "version": 8,
   "refresh": "30s",
   "time": {
     "from": "now-6h",
@@ -3270,6 +3270,17 @@
             "excludeByName": {},
             "indexByName": {}
           }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": [
+              {
+                "displayName": "DHI",
+                "desc": true
+              }
+            ]
+          }
         }
       ],
       "options": {
@@ -3286,6 +3297,7 @@
         "legend": {
           "displayMode": "list",
           "placement": "bottom",
+          "showLegend": true,
           "calcs": []
         },
         "orientation": "auto",
@@ -3359,7 +3371,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "#3b82f6",
+                  "fixedColor": "#ef4444",
                   "mode": "fixed"
                 }
               }
@@ -3389,7 +3401,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "#3b82f6",
+                  "fixedColor": "#ef4444",
                   "mode": "fixed"
                 }
               }
