@@ -8,7 +8,7 @@
     "chainguard"
   ],
   "schemaVersion": 40,
-  "version": 11,
+  "version": 12,
   "refresh": "30s",
   "time": {
     "from": "now-6h",
@@ -3247,7 +3247,8 @@
           "options": {
             "fields": [
               {
-                "desc": true
+                "displayName": "Field",
+                "desc": false
               }
             ]
           }
@@ -3346,7 +3347,8 @@
           "options": {
             "fields": [
               {
-                "desc": true
+                "displayName": "Field",
+                "desc": false
               }
             ]
           }
