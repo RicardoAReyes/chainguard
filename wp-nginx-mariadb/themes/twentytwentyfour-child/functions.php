@@ -13,6 +13,11 @@ function ttf_child_enqueue_scripts() {
         true
     );
 
+    // Motion — scroll-entrance animations on all content pages except the scan report
+    if ( ! is_page( 'security-scan-report' ) ) {
+        wp_add_inline_script( 'ttf-child-scripts', ttf_motion_scroll_js(), 'after' );
+    }
+
     // Supply chain attacks page — load Chart.js then initialize charts
     if ( is_page( 'supply-chain-attacks' ) ) {
         wp_enqueue_script(
@@ -26,6 +31,47 @@ function ttf_child_enqueue_scripts() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'ttf_child_enqueue_scripts' );
+
+function ttf_motion_scroll_js() {
+    return <<<'JS'
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.motionAnimate !== 'function') return;
+
+    var selectors = [
+      '.entry-content h1', '.entry-content h2', '.entry-content h3',
+      '.entry-content p', '.entry-content ul', '.entry-content ol',
+      '.entry-content figure', '.entry-content .wp-block-group',
+      '.entry-content .wp-block-columns', '.entry-content table',
+      '.entry-content blockquote'
+    ].join(', ');
+
+    var els = Array.from(document.querySelectorAll(selectors));
+    if (!els.length) return;
+
+    // Set initial hidden state
+    els.forEach(function(el) {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(24px)';
+    });
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) return;
+        window.motionAnimate(
+          entry.target,
+          { opacity: [0, 1], transform: ['translateY(24px)', 'translateY(0px)'] },
+          { duration: 0.5, easing: [0.25, 0.1, 0.25, 1] }
+        );
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    els.forEach(function(el) { observer.observe(el); });
+  });
+})();
+JS;
+}
 
 function ttf_supply_chain_charts_js() {
     return <<<'JS'
