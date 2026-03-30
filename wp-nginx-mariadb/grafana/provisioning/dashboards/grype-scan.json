@@ -4,7 +4,7 @@
   "description": "Container image vulnerability scan results from Grype via Chainguard images",
   "tags": ["security", "grype", "chainguard"],
   "schemaVersion": 40,
-  "version": 1,
+  "version": 2,
   "refresh": "30s",
   "time": { "from": "now-6h", "to": "now" },
   "timepicker": {},
@@ -337,10 +337,192 @@
       }
     },
     {
+      "id": 11,
+      "type": "barchart",
+      "title": "wordpress-custom — CVEs by Severity",
+      "gridPos": { "x": 0, "y": 18, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "grype_scan_vulnerabilities{image=\"wordpress\",severity=\"critical\"}", "legendFormat": "Critical", "instant": true, "refId": "A" },
+        { "expr": "grype_scan_vulnerabilities{image=\"wordpress\",severity=\"high\"}",    "legendFormat": "High",     "instant": true, "refId": "B" },
+        { "expr": "grype_scan_vulnerabilities{image=\"wordpress\",severity=\"medium\"}",  "legendFormat": "Medium",   "instant": true, "refId": "C" },
+        { "expr": "grype_scan_vulnerabilities{image=\"wordpress\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
+        { "expr": "grype_scan_vulnerabilities{image=\"wordpress\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
+      ],
+      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
+      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Medium" },   "properties": [{ "id": "color", "value": { "fixedColor": "#d69e2e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Low" },      "properties": [{ "id": "color", "value": { "fixedColor": "#3182ce", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Unknown" },  "properties": [{ "id": "color", "value": { "fixedColor": "#718096", "mode": "fixed" } }] }
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "type": "barchart",
+      "title": "nginx — CVEs by Severity",
+      "gridPos": { "x": 12, "y": 18, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "grype_scan_vulnerabilities{image=\"nginx\",severity=\"critical\"}", "legendFormat": "Critical", "instant": true, "refId": "A" },
+        { "expr": "grype_scan_vulnerabilities{image=\"nginx\",severity=\"high\"}",    "legendFormat": "High",     "instant": true, "refId": "B" },
+        { "expr": "grype_scan_vulnerabilities{image=\"nginx\",severity=\"medium\"}",  "legendFormat": "Medium",   "instant": true, "refId": "C" },
+        { "expr": "grype_scan_vulnerabilities{image=\"nginx\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
+        { "expr": "grype_scan_vulnerabilities{image=\"nginx\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
+      ],
+      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
+      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Medium" },   "properties": [{ "id": "color", "value": { "fixedColor": "#d69e2e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Low" },      "properties": [{ "id": "color", "value": { "fixedColor": "#3182ce", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Unknown" },  "properties": [{ "id": "color", "value": { "fixedColor": "#718096", "mode": "fixed" } }] }
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "type": "barchart",
+      "title": "mariadb — CVEs by Severity",
+      "gridPos": { "x": 0, "y": 27, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "grype_scan_vulnerabilities{image=\"mariadb\",severity=\"critical\"}", "legendFormat": "Critical", "instant": true, "refId": "A" },
+        { "expr": "grype_scan_vulnerabilities{image=\"mariadb\",severity=\"high\"}",    "legendFormat": "High",     "instant": true, "refId": "B" },
+        { "expr": "grype_scan_vulnerabilities{image=\"mariadb\",severity=\"medium\"}",  "legendFormat": "Medium",   "instant": true, "refId": "C" },
+        { "expr": "grype_scan_vulnerabilities{image=\"mariadb\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
+        { "expr": "grype_scan_vulnerabilities{image=\"mariadb\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
+      ],
+      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
+      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Medium" },   "properties": [{ "id": "color", "value": { "fixedColor": "#d69e2e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Low" },      "properties": [{ "id": "color", "value": { "fixedColor": "#3182ce", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Unknown" },  "properties": [{ "id": "color", "value": { "fixedColor": "#718096", "mode": "fixed" } }] }
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "type": "barchart",
+      "title": "node — CVEs by Severity",
+      "gridPos": { "x": 12, "y": 27, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "grype_scan_vulnerabilities{image=\"node\",severity=\"critical\"}", "legendFormat": "Critical", "instant": true, "refId": "A" },
+        { "expr": "grype_scan_vulnerabilities{image=\"node\",severity=\"high\"}",    "legendFormat": "High",     "instant": true, "refId": "B" },
+        { "expr": "grype_scan_vulnerabilities{image=\"node\",severity=\"medium\"}",  "legendFormat": "Medium",   "instant": true, "refId": "C" },
+        { "expr": "grype_scan_vulnerabilities{image=\"node\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
+        { "expr": "grype_scan_vulnerabilities{image=\"node\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
+      ],
+      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
+      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Medium" },   "properties": [{ "id": "color", "value": { "fixedColor": "#d69e2e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Low" },      "properties": [{ "id": "color", "value": { "fixedColor": "#3182ce", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Unknown" },  "properties": [{ "id": "color", "value": { "fixedColor": "#718096", "mode": "fixed" } }] }
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "type": "barchart",
+      "title": "grype — CVEs by Severity",
+      "gridPos": { "x": 0, "y": 36, "w": 8, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "grype_scan_vulnerabilities{image=\"grype\",severity=\"critical\"}", "legendFormat": "Critical", "instant": true, "refId": "A" },
+        { "expr": "grype_scan_vulnerabilities{image=\"grype\",severity=\"high\"}",    "legendFormat": "High",     "instant": true, "refId": "B" },
+        { "expr": "grype_scan_vulnerabilities{image=\"grype\",severity=\"medium\"}",  "legendFormat": "Medium",   "instant": true, "refId": "C" },
+        { "expr": "grype_scan_vulnerabilities{image=\"grype\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
+        { "expr": "grype_scan_vulnerabilities{image=\"grype\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
+      ],
+      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
+      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Medium" },   "properties": [{ "id": "color", "value": { "fixedColor": "#d69e2e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Low" },      "properties": [{ "id": "color", "value": { "fixedColor": "#3182ce", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Unknown" },  "properties": [{ "id": "color", "value": { "fixedColor": "#718096", "mode": "fixed" } }] }
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "type": "barchart",
+      "title": "prometheus — CVEs by Severity",
+      "gridPos": { "x": 8, "y": 36, "w": 8, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "grype_scan_vulnerabilities{image=\"prometheus\",severity=\"critical\"}", "legendFormat": "Critical", "instant": true, "refId": "A" },
+        { "expr": "grype_scan_vulnerabilities{image=\"prometheus\",severity=\"high\"}",    "legendFormat": "High",     "instant": true, "refId": "B" },
+        { "expr": "grype_scan_vulnerabilities{image=\"prometheus\",severity=\"medium\"}",  "legendFormat": "Medium",   "instant": true, "refId": "C" },
+        { "expr": "grype_scan_vulnerabilities{image=\"prometheus\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
+        { "expr": "grype_scan_vulnerabilities{image=\"prometheus\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
+      ],
+      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
+      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Medium" },   "properties": [{ "id": "color", "value": { "fixedColor": "#d69e2e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Low" },      "properties": [{ "id": "color", "value": { "fixedColor": "#3182ce", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Unknown" },  "properties": [{ "id": "color", "value": { "fixedColor": "#718096", "mode": "fixed" } }] }
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "type": "barchart",
+      "title": "grafana — CVEs by Severity",
+      "gridPos": { "x": 16, "y": 36, "w": 8, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "grype_scan_vulnerabilities{image=\"grafana\",severity=\"critical\"}", "legendFormat": "Critical", "instant": true, "refId": "A" },
+        { "expr": "grype_scan_vulnerabilities{image=\"grafana\",severity=\"high\"}",    "legendFormat": "High",     "instant": true, "refId": "B" },
+        { "expr": "grype_scan_vulnerabilities{image=\"grafana\",severity=\"medium\"}",  "legendFormat": "Medium",   "instant": true, "refId": "C" },
+        { "expr": "grype_scan_vulnerabilities{image=\"grafana\",severity=\"low\"}",     "legendFormat": "Low",      "instant": true, "refId": "D" },
+        { "expr": "grype_scan_vulnerabilities{image=\"grafana\",severity=\"unknown\"}", "legendFormat": "Unknown",  "instant": true, "refId": "E" }
+      ],
+      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"] } }],
+      "options": { "orientation": "horizontal", "groupWidth": 0.7, "barWidth": 0.8, "fillOpacity": 80, "gradientMode": "none", "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden" }, "xTickLabelRotation": 0 },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "#718096" }, "unit": "short", "min": 0 },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Critical" }, "properties": [{ "id": "color", "value": { "fixedColor": "#e53e3e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "High" },     "properties": [{ "id": "color", "value": { "fixedColor": "#dd6b20", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Medium" },   "properties": [{ "id": "color", "value": { "fixedColor": "#d69e2e", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Low" },      "properties": [{ "id": "color", "value": { "fixedColor": "#3182ce", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Unknown" },  "properties": [{ "id": "color", "value": { "fixedColor": "#718096", "mode": "fixed" } }] }
+        ]
+      }
+    },
+    {
       "id": 6,
       "type": "table",
       "title": "CVE Breakdown by Image",
-      "gridPos": { "x": 0, "y": 18, "w": 24, "h": 8 },
+      "gridPos": { "x": 0, "y": 45, "w": 24, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         { "expr": "grype_scan_vulnerabilities{severity=\"critical\"}", "legendFormat": "{{image}}", "instant": true, "refId": "A" },
@@ -375,7 +557,7 @@
       "id": 7,
       "type": "timeseries",
       "title": "CVE Trend Over Time (Total per Image)",
-      "gridPos": { "x": 0, "y": 26, "w": 24, "h": 8 },
+      "gridPos": { "x": 0, "y": 53, "w": 24, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
