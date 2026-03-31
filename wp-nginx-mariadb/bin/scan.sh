@@ -29,27 +29,27 @@ grype() {
     "$@"
 }
 
-# Chainguard hardened images (project runtime)
+# Chainguard hardened images — scanned directly from the registry so results
+# always reflect the latest daily-patched digest, not a locally cached layer.
 CG_IMAGES=(
-  "wordpress:wordpress-custom:latest"
-  "nginx:cgr.dev/chainguard-private/nginx:latest"
-  "mariadb:cgr.dev/chainguard-private/mariadb:latest"
-  "node:cgr.dev/chainguard-private/node:latest"
-  "grype:cgr.dev/chainguard-private/grype:latest"
-  "prometheus:cgr.dev/chainguard-private/prometheus:latest"
-  "grafana:cgr.dev/chainguard-private/grafana:latest"
+  "wordpress:docker:wordpress-custom:latest"
+  "nginx:registry:cgr.dev/chainguard-private/nginx:latest"
+  "mariadb:registry:cgr.dev/chainguard-private/mariadb:latest"
+  "node:registry:cgr.dev/chainguard-private/node:latest"
+  "grype:registry:cgr.dev/chainguard-private/grype:latest"
+  "prometheus:registry:cgr.dev/chainguard-private/prometheus:latest"
+  "grafana:registry:cgr.dev/chainguard-private/grafana:latest"
 )
 
-# Docker Hardened Images — upstream equivalents for comparison.
-# Update these to match your actual DHI image references.
+# Docker Hub images — scanned directly from the registry for the same reason.
 DHI_IMAGES=(
-  "wordpress:wordpress:latest"
-  "nginx:nginx:latest"
-  "mariadb:mariadb:latest"
-  "node:node:lts"
-  "grype:anchore/grype:latest"
-  "prometheus:prom/prometheus:latest"
-  "grafana:grafana/grafana:latest"
+  "wordpress:registry:docker.io/library/wordpress:latest"
+  "nginx:registry:docker.io/library/nginx:latest"
+  "mariadb:registry:docker.io/library/mariadb:latest"
+  "node:registry:docker.io/library/node:lts"
+  "grype:registry:docker.io/anchore/grype:latest"
+  "prometheus:registry:docker.io/prom/prometheus:latest"
+  "grafana:registry:docker.io/grafana/grafana:latest"
 )
 
 log "Timestamp: ${TS}"
@@ -136,3 +136,7 @@ for entry in "${DHI_IMAGES[@]}"; do
     "\(.name)  \(.critical)  \(.high)  \(.medium)  \(.low)  \(.unknown)  \(.total)"
   ' "${out}" | awk '{printf "%-12s  %8s  %8s  %8s  %8s  %8s  %8s\n", $1, $2, $3, $4, $5, $6, $7}'
 done
+
+# ── Sync results into WordPress Issue Tracker ─────────────────────────────────
+echo ""
+bash "${SCRIPT_DIR}/import-issues.sh"

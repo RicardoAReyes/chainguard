@@ -144,6 +144,35 @@ footer a:hover {
   color: var(--color-sage) !important;
 }
 
+/* Full-width layout for project and issue pages */
+
+.emd-wrap.emd-project .emdcontainer,
+.emd-wrap.emd-issue .emdcontainer {
+  max-width: 100% !important;
+}
+
+.emd-wrap.right.emd-project #emd-primary,
+.emd-wrap.right.emd-issue #emd-primary {
+  grid-template-columns: 100% !important;
+  grid-template-areas: "pcontent" !important;
+}
+
+.emd-wrap.emd-project #emd-primary-content,
+.emd-wrap.emd-issue #emd-primary-content {
+  flex-basis: 100% !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.emd-project #table-project-issues-con {
+  width: 100%;
+}
+
+.emd-project .panel-body.emd-table-container,
+.emd-issue .panel-body.emd-table-container {
+  overflow-x: auto;
+}
+
 /* Full-width layout for diagram page (page-id-38) */
 .page-id-38 .entry-content.is-layout-constrained > *,
 .page-id-38 .entry-content.is-layout-constrained > .alignfull {

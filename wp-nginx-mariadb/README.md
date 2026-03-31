@@ -117,7 +117,45 @@ The scanner runs **two sets of images in parallel**:
 
 Scanned images: `wordpress`, `nginx`, `mariadb`, `node`, `grype`, `prometheus`, `grafana`
 
-A summary table is printed for both sets at the end of each run. Results feed the metrics-exporter → Prometheus → Grafana pipeline automatically.
+**Registry-direct scanning:** All images are scanned using the `registry:` scheme (e.g. `registry:cgr.dev/chainguard-private/nginx:latest`), which fetches the image manifest directly from the registry at scan time rather than using a locally cached layer. This ensures results always reflect Chainguard's latest daily-patched digest. The custom `wordpress-custom` image is the only exception — it is scanned from the local Docker daemon via `docker:wordpress-custom:latest`.
+
+A summary table is printed for both sets at the end of each run. Results feed the metrics-exporter → Prometheus → Grafana pipeline **and** the WordPress Issue Tracker automatically.
+
+## WordPress Issue Tracker
+
+After each scan, `bin/scan.sh` automatically syncs CVE findings into the WordPress **Software Issue Manager** plugin, creating two projects:
+
+| Project | URL | Source |
+|---|---|---|
+| Chainguard Software Issues | `/projects/chainguard-software-issues/` | CG scan results |
+| DHI Software Issues | `/projects/dhi-software-issues/` | DHI scan results |
+
+Only **Critical** and **High** severity CVEs are imported. Each issue contains the CVE ID, description, affected package, CVSS/EPSS scores, fix state, and a link to the data source.
+
+A live dashboard with Chart.js charts, severity breakdowns, and stat cards is available at **http://localhost:8000/issue-tracker/** via the `[issue_dashboard]` shortcode.
+
+### How it works
+
+```
+bin/scan.sh
+  └── bin/import-issues.sh        # copies latest JSON into the container
+        └── bin/import-issues.php # deletes all issues, re-imports from scan JSON
+              └── WordPress DB    # updates grype_last_import timestamp
+```
+
+Each run is a **full replace** — all existing issues are deleted and recreated from the latest scan files. Issue URLs change on each import. To update the tracker without re-scanning:
+
+```bash
+bash bin/import-issues.sh
+```
+
+### Issue table features
+
+The project issue table (`/projects/<slug>/`) supports:
+- **Column filters** — text search on CVE ID and Description; dropdowns for Container, Severity, Priority, Category, Status
+- **Live row count** with a Clear filters button
+- Severity colour-coded badges (Critical = terra cotta, High = sandy yellow)
+- Container name badges per row
 
 ## Grafana Dashboard
 
@@ -197,7 +235,9 @@ wp-nginx-mariadb/
 ├── melange.rsa.pub              # APK signing public key
 ├── sbom-*.spdx.json             # SPDX SBOMs (apko-generated)
 ├── bin/
-│   ├── scan.sh                  # On-demand Grype vulnerability scanner
+│   ├── scan.sh                  # On-demand Grype vulnerability scanner (registry-direct)
+│   ├── import-issues.sh         # Copies scan JSON into container, runs import
+│   ├── import-issues.php        # Syncs CVEs into WordPress Issue Manager plugin
 │   └── setup.sh                 # Full stack restore script
 ├── metrics-exporter/
 │   ├── server.js                # Prometheus metrics exporter
@@ -219,8 +259,12 @@ wp-nginx-mariadb/
         ├── node_modules/        # Dependencies (git ignored)
         ├── package.json         # npm manifest
         ├── .npmrc.example       # Registry config template
-        ├── functions.php        # WordPress enqueue logic
-        └── style.css            # Theme styles
+        ├── functions.php        # WordPress enqueue + [issue_dashboard] shortcode
+        ├── style.css            # Theme styles + full-width layout overrides
+        └── emd_templates/       # Software Issue Manager template overrides
+            ├── single-emd-project.php   # Project page: custom columns + column filters
+            ├── shc-sc-issues-header.php # Issue list header columns
+            └── shc-sc-issues-content.php # Issue list row template
 ```
 
 ## Ghost CMS — apko + melange Build
