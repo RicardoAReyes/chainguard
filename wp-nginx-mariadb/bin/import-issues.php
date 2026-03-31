@@ -270,4 +270,10 @@ $scan_summary = build_scan_summary($images);
 update_option( 'grype_scan_summary',  $scan_summary );
 update_option( 'grype_last_import', current_time( 'mysql' ) );
 
+// Ensure both post types are publicly visible without login
+$ent_map = get_option('software_issue_manager_ent_map_list', []);
+$ent_map['emd_project']['make_visitor_visible'] = 1;
+$ent_map['emd_issue']['make_visitor_visible']   = 1;
+update_option('software_issue_manager_ent_map_list', $ent_map);
+
 echo "\nDone.\n";

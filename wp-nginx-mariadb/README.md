@@ -140,7 +140,7 @@ A live dashboard with Chart.js charts, severity breakdowns, and stat cards is av
 bin/scan.sh
   └── bin/import-issues.sh        # copies latest JSON into the container
         └── bin/import-issues.php # deletes all issues, re-imports from scan JSON
-              └── WordPress DB    # updates grype_last_import timestamp
+              └── WordPress DB    # updates grype_last_import + grype_scan_summary
 ```
 
 Each run is a **full replace** — all existing issues are deleted and recreated from the latest scan files. Issue URLs change on each import. To update the tracker without re-scanning:
@@ -148,6 +148,18 @@ Each run is a **full replace** — all existing issues are deleted and recreated
 ```bash
 bash bin/import-issues.sh
 ```
+
+### Dashboard panels
+
+The `[issue_dashboard]` shortcode renders:
+
+| Panel | Description |
+|---|---|
+| Stat cards | CG total, DHI total, % fewer CVEs, CG Critical count, images scanned |
+| Issues by Container | Grouped bar chart — Critical + High per image, CG vs DHI side-by-side (full-width) |
+| Chainguard / DHI Severity Split | Doughnut charts — all 5 severities (Critical, High, Medium, Low, Unknown) |
+| Full Scan Summary | All-severity breakdown table per image for both CG and DHI, with CG Total, DHI Total, and Reduction columns (full-width) |
+| All Issues | Filterable table of all Critical & High CVEs with scan type, severity, and container badges (full-width) |
 
 ### Issue table features
 

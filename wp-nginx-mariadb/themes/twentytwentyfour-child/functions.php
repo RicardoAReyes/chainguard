@@ -13,8 +13,8 @@ function ttf_child_enqueue_scripts() {
         true
     );
 
-    // Motion — scroll-entrance animations on all content pages except the scan report
-    if ( ! is_page( 'security-scan-report' ) ) {
+    // Motion — scroll-entrance animations on all content pages except the scan report and issue tracker
+    if ( ! is_page( 'security-scan-report' ) && ! is_page( 'issue-tracker' ) ) {
         wp_add_inline_script( 'ttf-child-scripts', ttf_motion_scroll_js(), 'after' );
     }
 
@@ -319,10 +319,24 @@ function ttf_issue_dashboard() {
 
     // JSON for JS
     $js_images      = wp_json_encode( $images );
-    $js_cg_crit     = wp_json_encode( array_map( fn($d) => $d['Critical'], $cg_data ) );
-    $js_cg_high     = wp_json_encode( array_map( fn($d) => $d['High'],     $cg_data ) );
-    $js_dhi_crit    = wp_json_encode( array_map( fn($d) => $d['Critical'], $dhi_data ) );
-    $js_dhi_high    = wp_json_encode( array_map( fn($d) => $d['High'],     $dhi_data ) );
+    $js_cg_crit     = wp_json_encode( array_values( array_map( fn($d) => $d['Critical'], $cg_data ) ) );
+    $js_cg_high     = wp_json_encode( array_values( array_map( fn($d) => $d['High'],     $cg_data ) ) );
+    $js_dhi_crit    = wp_json_encode( array_values( array_map( fn($d) => $d['Critical'], $dhi_data ) ) );
+    $js_dhi_high    = wp_json_encode( array_values( array_map( fn($d) => $d['High'],     $dhi_data ) ) );
+
+    // Full severity totals for donut charts (from scan_summary, all severities)
+    $ss             = get_option( 'grype_scan_summary', [] );
+    $sev_keys       = [ 'Critical', 'High', 'Medium', 'Low', 'Unknown' ];
+    $cg_sev_donut   = array_fill_keys( $sev_keys, 0 );
+    $dhi_sev_donut  = array_fill_keys( $sev_keys, 0 );
+    foreach ( $images as $img ) {
+        foreach ( $sev_keys as $s ) {
+            $cg_sev_donut[$s]  += $ss['cg'][$img][$s]  ?? 0;
+            $dhi_sev_donut[$s] += $ss['dhi'][$img][$s] ?? 0;
+        }
+    }
+    $js_cg_donut  = wp_json_encode( array_values( $cg_sev_donut ) );
+    $js_dhi_donut = wp_json_encode( array_values( $dhi_sev_donut ) );
     $cg_project_url  = esc_url( get_permalink( get_page_by_path( 'chainguard-software-issues', OBJECT, 'emd_project' ) ) );
     $dhi_project_url = esc_url( get_permalink( get_page_by_path( 'dhi-software-issues',        OBJECT, 'emd_project' ) ) );
     $last_import_raw = get_option( 'grype_last_import', '' );
@@ -370,7 +384,7 @@ function ttf_issue_dashboard() {
 </div>
 
 <!-- ── Grouped bar chart: CG vs DHI by container ─────────────────────────── -->
-<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;margin-bottom:24px;">
+<div class="alignfull" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;margin-bottom:24px;">
   <h2 style="font-size:1.1em;font-weight:700;color:#3D405B;margin:0 0 20px;">Issues by Container — Chainguard vs DHI</h2>
   <canvas id="iddContainerChart" height="90"></canvas>
 </div>
@@ -399,7 +413,7 @@ $sev_colors   = [
     'Unknown'  => '#d1d5db',
 ];
 if ( ! empty( $scan_summary ) ) : ?>
-<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;margin-bottom:24px;overflow-x:auto;">
+<div class="alignfull" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;margin-bottom:24px;overflow-x:auto;">
   <h2 style="font-size:1.1em;font-weight:700;color:#3D405B;margin:0 0 16px;">Full Scan Summary — All Severities</h2>
   <table style="width:100%;border-collapse:collapse;font-size:0.84em;">
     <thead>
@@ -544,19 +558,130 @@ if ( ! empty( $scan_summary ) ) : ?>
 </div>
 
 <!-- ── Issue list ─────────────────────────────────────────────────────────── -->
-<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;margin-bottom:24px;">
+<?php
+$all_issues_query = new WP_Query( [
+    'post_type'      => 'emd_issue',
+    'post_status'    => 'publish',
+    'posts_per_page' => -1,
+    'orderby'        => 'meta_value',
+    'meta_key'       => '_severity',
+    'order'          => 'ASC',
+    'no_found_rows'  => true,
+] );
+$all_issues_posts = $all_issues_query->posts;
+// Sort: Critical first, then High
+usort( $all_issues_posts, function( $a, $b ) {
+    $order = [ 'Critical' => 0, 'High' => 1 ];
+    $sa = $order[ get_post_meta( $a->ID, '_severity', true ) ] ?? 2;
+    $sb = $order[ get_post_meta( $b->ID, '_severity', true ) ] ?? 2;
+    if ( $sa !== $sb ) return $sa - $sb;
+    return strcmp(
+        get_post_meta( $a->ID, '_container', true ),
+        get_post_meta( $b->ID, '_container', true )
+    );
+} );
+?>
+<div class="alignfull" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;margin-bottom:24px;overflow-x:auto;">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-    <h2 style="font-size:1.1em;font-weight:700;color:#3D405B;margin:0;">All Issues</h2>
-    <div style="font-size:0.82em;color:#6b7280;">Filter by priority, status, or tag using the search form &nbsp;·&nbsp; <a href="<?php echo esc_url( home_url('/search-issues/') ); ?>" style="color:#16a34a;font-weight:600;">Advanced Search →</a></div>
+    <h2 style="font-size:1.1em;font-weight:700;color:#3D405B;margin:0;">All Issues <span style="font-size:0.75em;font-weight:400;color:#6b7280;">(<?php echo count( $all_issues_posts ); ?> total)</span></h2>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <select id="ail-f-scan" style="font-size:0.82em;padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;color:#3D405B;">
+        <option value="">All scan types</option>
+        <option value="cg">Chainguard</option>
+        <option value="dhi">DHI</option>
+      </select>
+      <select id="ail-f-sev" style="font-size:0.82em;padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;color:#3D405B;">
+        <option value="">All severities</option>
+        <option value="Critical">Critical</option>
+        <option value="High">High</option>
+      </select>
+      <select id="ail-f-img" style="font-size:0.82em;padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;color:#3D405B;">
+        <option value="">All containers</option>
+        <?php foreach ( $images as $img ) : ?>
+        <option value="<?php echo esc_attr( $img ); ?>"><?php echo esc_html( $img ); ?></option>
+        <?php endforeach; ?>
+      </select>
+      <input id="ail-f-cve" type="text" placeholder="Search CVE…" style="font-size:0.82em;padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;color:#3D405B;width:140px;">
+      <button id="ail-clear" type="button" style="font-size:0.8em;padding:4px 10px;border:1px solid #cbd5e1;border-radius:4px;background:#f8fafc;cursor:pointer;color:#3D405B;">✕ Clear</button>
+    </div>
   </div>
-  <?php
-    if ( function_exists( 'software_issue_manager_sc_issues_set_shc' ) ) {
-        echo software_issue_manager_sc_issues_set_shc( [], [], '', 1 );
-    } else {
-        echo '<p style="color:#6b7280;font-size:0.9em;">Issue list unavailable — Software Issue Manager plugin not active.</p>';
-    }
-  ?>
+  <table id="ail-table" style="width:100%;border-collapse:collapse;font-size:0.86em;">
+    <thead>
+      <tr style="background:#3D405B;color:#fff;">
+        <th style="padding:10px 14px;text-align:left;min-width:180px;">Issue #</th>
+        <th style="padding:10px 14px;text-align:left;">Description</th>
+        <th style="padding:10px 14px;text-align:center;">Container</th>
+        <th style="padding:10px 14px;text-align:center;">Severity</th>
+        <th style="padding:10px 14px;text-align:center;">Scan</th>
+      </tr>
+    </thead>
+    <tbody>
+    <?php foreach ( $all_issues_posts as $i => $issue ) :
+        $iid      = $issue->ID;
+        $cve_id   = get_post_meta( $iid, '_cve_id',    true ) ?: $issue->post_title;
+        $cont     = get_post_meta( $iid, '_container', true );
+        $sev      = get_post_meta( $iid, '_severity',  true );
+        $scan     = get_post_meta( $iid, '_scan_type', true );
+        $pkg      = get_post_meta( $iid, '_package',   true );
+        preg_match( '/<p[^>]*color:#4a5568[^>]*>(.*?)<\/p>/s', $issue->post_content, $dm );
+        $desc     = isset( $dm[1] ) ? wp_strip_all_tags( $dm[1] ) : '';
+        $desc     = mb_strlen( $desc ) > 160 ? mb_substr( $desc, 0, 160 ) . '…' : $desc;
+        $sev_bg   = $sev === 'Critical' ? '#E07A5F' : '#F2CC8F';
+        $sev_fg   = $sev === 'Critical' ? '#fff' : '#3D405B';
+        $scan_label = $scan === 'cg' ? 'Chainguard' : 'DHI';
+        $scan_bg    = $scan === 'cg' ? '#f0fdf4' : '#fef2f2';
+        $scan_fg    = $scan === 'cg' ? '#166534'  : '#991b1b';
+        $row_bg   = $i % 2 === 0 ? '#fff' : '#f8fafc';
+    ?>
+    <tr style="background:<?php echo $row_bg; ?>;border-bottom:1px solid #e2e8f0;"
+        data-scan="<?php echo esc_attr( $scan ); ?>"
+        data-sev="<?php echo esc_attr( $sev ); ?>"
+        data-img="<?php echo esc_attr( $cont ); ?>"
+        data-cve="<?php echo esc_attr( strtolower( $cve_id ) ); ?>">
+      <td style="padding:8px 14px;"><a href="<?php echo esc_url( get_permalink( $iid ) ); ?>" style="color:#E07A5F;font-weight:600;text-decoration:none;"><?php echo esc_html( $cve_id ); ?></a></td>
+      <td style="padding:8px 14px;color:#4a5568;font-size:0.9em;"><?php echo esc_html( $desc ?: $pkg ); ?></td>
+      <td style="padding:8px 14px;text-align:center;"><span style="background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;padding:2px 9px;border-radius:12px;font-size:0.82em;font-weight:600;"><?php echo esc_html( $cont ); ?></span></td>
+      <td style="padding:8px 14px;text-align:center;"><span style="background:<?php echo $sev_bg; ?>;color:<?php echo $sev_fg; ?>;padding:2px 9px;border-radius:12px;font-size:0.82em;font-weight:700;"><?php echo esc_html( $sev ); ?></span></td>
+      <td style="padding:8px 14px;text-align:center;"><span style="background:<?php echo $scan_bg; ?>;color:<?php echo $scan_fg; ?>;padding:2px 9px;border-radius:12px;font-size:0.78em;font-weight:600;"><?php echo $scan_label; ?></span></td>
+    </tr>
+    <?php endforeach; ?>
+    </tbody>
+  </table>
+  <p id="ail-empty" style="display:none;color:#6b7280;font-size:0.9em;text-align:center;padding:20px;">No issues match the current filters.</p>
 </div>
+<script>
+(function(){
+  var rows   = Array.from(document.querySelectorAll('#ail-table tbody tr'));
+  var empty  = document.getElementById('ail-empty');
+  var filters = {
+    scan: document.getElementById('ail-f-scan'),
+    sev:  document.getElementById('ail-f-sev'),
+    img:  document.getElementById('ail-f-img'),
+    cve:  document.getElementById('ail-f-cve'),
+  };
+  function apply() {
+    var visible = 0;
+    rows.forEach(function(r) {
+      var show = true;
+      if (filters.scan.value && r.dataset.scan !== filters.scan.value) show = false;
+      if (filters.sev.value  && r.dataset.sev  !== filters.sev.value)  show = false;
+      if (filters.img.value  && r.dataset.img  !== filters.img.value)  show = false;
+      if (filters.cve.value  && r.dataset.cve.indexOf(filters.cve.value.toLowerCase()) === -1) show = false;
+      r.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    empty.style.display = visible === 0 ? '' : 'none';
+  }
+  filters.scan.addEventListener('change', apply);
+  filters.sev.addEventListener('change', apply);
+  filters.img.addEventListener('change', apply);
+  filters.cve.addEventListener('input', apply);
+  document.getElementById('ail-clear').addEventListener('click', function(){
+    filters.scan.value = ''; filters.sev.value = ''; filters.img.value = ''; filters.cve.value = '';
+    apply();
+  });
+})();
+</script>
 
 <!-- ── Chart.js init ──────────────────────────────────────────────────────── -->
 <script>
@@ -612,20 +737,37 @@ if ( ! empty( $scan_summary ) ) : ?>
       });
     }
 
+    var donutLabels = ['Critical', 'High', 'Medium', 'Low', 'Unknown'];
+    var donutColors = ['#E07A5F', '#F2CC8F', '#94a3b8', '#cbd5e1', '#e2e8f0'];
+    var donutBorders= ['#c95f44', '#d4aa6a', '#64748b', '#94a3b8', '#cbd5e1'];
+    var cgDonutData  = <?php echo $js_cg_donut; ?>;
+    var dhiDonutData = <?php echo $js_dhi_donut; ?>;
+
+    var donutOpts = function(data) {
+      return {
+        responsive: true, cutout: '65%',
+        plugins: {
+          datalabels: { display: false },
+          legend: { position: 'bottom', labels: { color: '#3D405B', font: { size: 12 },
+            filter: function(item, chart) { return chart.datasets[0].data[item.index] > 0; } } },
+          tooltip: { callbacks: { label: function(ctx) {
+            var val = ctx.raw;
+            var total = ctx.dataset.data.reduce(function(a,b){ return a+b; }, 0);
+            var pct = total > 0 ? Math.round(val / total * 100) : 0;
+            return ' ' + ctx.label + ': ' + val + ' (' + pct + '%)';
+          }}}
+        }
+      };
+    };
+
     // CG donut
     var cgDonutEl = document.getElementById('iddCgDonut');
     if (cgDonutEl) {
       new window.Chart(cgDonutEl.getContext('2d'), {
         type: 'doughnut',
-        data: {
-          labels: ['Critical', 'High'],
-          datasets: [{ data: [cgCritTot, cgHighTot],
-            backgroundColor: ['#E07A5F', '#81B29A'],
-            borderColor: ['#c95f44', '#62967a'], borderWidth: 2 }]
-        },
-        options: { responsive: true, cutout: '65%',
-          plugins: { legend: { position: 'bottom', labels: { color: '#3D405B', font: { size: 12 } } },
-            tooltip: { callbacks: { label: function(ctx) { return ' ' + ctx.label + ': ' + ctx.parsed; } } } } }
+        data: { labels: donutLabels, datasets: [{ data: cgDonutData,
+          backgroundColor: donutColors, borderColor: donutBorders, borderWidth: 2 }] },
+        options: donutOpts(cgDonutData)
       });
     }
 
@@ -634,15 +776,9 @@ if ( ! empty( $scan_summary ) ) : ?>
     if (dhiDonutEl) {
       new window.Chart(dhiDonutEl.getContext('2d'), {
         type: 'doughnut',
-        data: {
-          labels: ['Critical', 'High'],
-          datasets: [{ data: [dhiCritTot, dhiHighTot],
-            backgroundColor: ['#E07A5F', '#F2CC8F'],
-            borderColor: ['#c95f44', '#d4aa6a'], borderWidth: 2 }]
-        },
-        options: { responsive: true, cutout: '65%',
-          plugins: { legend: { position: 'bottom', labels: { color: '#3D405B', font: { size: 12 } } },
-            tooltip: { callbacks: { label: function(ctx) { return ' ' + ctx.label + ': ' + ctx.parsed; } } } } }
+        data: { labels: donutLabels, datasets: [{ data: dhiDonutData,
+          backgroundColor: donutColors, borderColor: donutBorders, borderWidth: 2 }] },
+        options: donutOpts(dhiDonutData)
       });
     }
   }
