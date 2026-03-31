@@ -41,16 +41,15 @@ All 7 runtime images are sourced from Chainguard's private registry — hardened
 
 ## AI Tooling
 
-WordPress content is managed using a Claude AI Skill:
+WordPress content and theme development are managed using Claude AI Skills stored in `.claude/commands/`:
 
 | Skill | Source | Purpose |
 |---|---|---|
 | `wordpress-content` | [skills.sh/jezweb/claude-skills/wordpress-content](https://skills.sh/jezweb/claude-skills/wordpress-content) | Structured WP-CLI workflow: draft → verify → publish |
+| `navigation-menu-generator` | [skills.sh/kostja94/marketing-skills/navigation-menu-generator](https://skills.sh/kostja94/marketing-skills/navigation-menu-generator) | Navigation menu design for SEO, UX, and accessibility |
+| `wordpress-theme-development` | [skills.sh/sickn33/antigravity-awesome-skills/wordpress-theme-development](https://skills.sh/sickn33/antigravity-awesome-skills/wordpress-theme-development) | WordPress theme development workflow with block editor support |
 
-Import the skill in Claude Code:
-```
-import the wordpress-content skill from https://skills.sh/jezweb/claude-skills/wordpress-content
-```
+Skills are saved to `.claude/commands/` and available via `/skill-name` in Claude Code without re-importing.
 
 ## Prerequisites
 
@@ -99,6 +98,28 @@ docker compose up -d
 Visit http://localhost:8000 to complete the WordPress installer.
 
 > **Restore from scratch:** `bash bin/setup.sh` — tears down and rebuilds the full stack including WordPress install, pages, and theme.
+
+## Homepage
+
+The static homepage at **http://localhost:8000/** includes:
+
+- **Hero banner** — headline with links to the Issue Tracker and Security Scan Report
+- **Featured post** — latest article from the Chainguard Unchained blog (live RSS feed)
+- **Latest Updates** — 6 most recent posts in a responsive card grid
+- **View all →** link to [chainguard.dev/unchained](https://www.chainguard.dev/unchained)
+
+Feed content is fetched via `[chainguard_unchained]` shortcode using WordPress's `fetch_feed()` with a 12-hour cache.
+
+## Navigation
+
+A dynamic hamburger menu is rendered on all pages via the child theme:
+
+- Reads items live from the **Primary Menu** configured in WordPress Admin → Appearance → Menus
+- Slide-out drawer from the right with stagger animation and backdrop overlay
+- Active page highlighted with a terra cotta accent
+- Fully accessible: `aria-expanded`, `aria-current`, keyboard (`Escape` to close)
+
+Current menu items: **Home · Scan Report · Issue Tracker · Services · Architecture · Supply Chain Attacks**
 
 ## Vulnerability Scanning
 
