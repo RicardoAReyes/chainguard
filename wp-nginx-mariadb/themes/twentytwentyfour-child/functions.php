@@ -377,9 +377,9 @@ function ttf_issue_dashboard() {
     <div style="font-size:0.75em;color:#6b7280;margin-top:2px;">vs <?php echo $dhi_critical; ?> in DHI</div>
   </div>
   <div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:10px;padding:22px;text-align:center;">
-    <div style="font-size:2.2em;font-weight:800;color:#9333ea;"><?php echo count( $images ); ?></div>
+    <div style="font-size:2.2em;font-weight:800;color:#9333ea;"><?php echo count( $images ) * 2; ?></div>
     <div style="font-size:0.82em;color:#4a5568;margin-top:4px;font-weight:600;">Images Scanned</div>
-    <div style="font-size:0.75em;color:#6b7280;margin-top:2px;">Both CG &amp; DHI</div>
+    <div style="font-size:0.75em;color:#6b7280;margin-top:2px;"><?php echo count( $images ); ?> CG &amp; <?php echo count( $images ); ?> DHI</div>
   </div>
 </div>
 
