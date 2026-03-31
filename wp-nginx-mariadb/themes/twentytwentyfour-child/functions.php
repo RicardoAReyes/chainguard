@@ -502,49 +502,6 @@ if ( ! empty( $scan_summary ) ) : ?>
 </div>
 <?php endif; ?>
 
-<!-- ── Per-container breakdown table ─────────────────────────────────────── -->
-<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;margin-bottom:24px;overflow-x:auto;">
-  <h2 style="font-size:1.1em;font-weight:700;color:#3D405B;margin:0 0 16px;">Per-Container Breakdown</h2>
-  <table style="width:100%;border-collapse:collapse;font-size:0.88em;">
-    <thead>
-      <tr style="background:#3D405B;color:#fff;">
-        <th style="padding:10px 14px;text-align:left;">Container</th>
-        <th style="padding:10px 14px;text-align:center;">CG Critical</th>
-        <th style="padding:10px 14px;text-align:center;">CG High</th>
-        <th style="padding:10px 14px;text-align:center;">CG Total</th>
-        <th style="padding:10px 14px;text-align:center;">DHI Critical</th>
-        <th style="padding:10px 14px;text-align:center;">DHI High</th>
-        <th style="padding:10px 14px;text-align:center;">DHI Total</th>
-        <th style="padding:10px 14px;text-align:center;">Reduction</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php foreach ( $images as $i => $img ) :
-          $cc = $cg_data[$img]['Critical'];
-          $ch = $cg_data[$img]['High'];
-          $ct = $cc + $ch;
-          $dc = $dhi_data[$img]['Critical'];
-          $dh = $dhi_data[$img]['High'];
-          $dt = $dc + $dh;
-          $red = $dt > 0 ? round( (1 - $ct/$dt) * 100 ) : 0;
-          $row_bg = $i % 2 === 0 ? '#fff' : '#f8fafc';
-          $red_color = $red >= 50 ? '#16a34a' : ($red >= 0 ? '#ca8a04' : '#dc2626');
-      ?>
-      <tr style="background:<?php echo $row_bg; ?>;border-bottom:1px solid #e2e8f0;">
-        <td style="padding:9px 14px;font-weight:600;color:#3D405B;"><?php echo esc_html( $img ); ?></td>
-        <td style="padding:9px 14px;text-align:center;color:#E07A5F;"><?php echo $cc; ?></td>
-        <td style="padding:9px 14px;text-align:center;color:#4a5568;"><?php echo $ch; ?></td>
-        <td style="padding:9px 14px;text-align:center;font-weight:700;"><?php echo $ct; ?></td>
-        <td style="padding:9px 14px;text-align:center;color:#E07A5F;"><?php echo $dc; ?></td>
-        <td style="padding:9px 14px;text-align:center;color:#4a5568;"><?php echo $dh; ?></td>
-        <td style="padding:9px 14px;text-align:center;font-weight:700;"><?php echo $dt; ?></td>
-        <td style="padding:9px 14px;text-align:center;font-weight:700;color:<?php echo $red_color; ?>;"><?php echo $red; ?>%</td>
-      </tr>
-      <?php endforeach; ?>
-    </tbody>
-  </table>
-</div>
-
 <!-- ── Quick links ────────────────────────────────────────────────────────── -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:8px;">
   <a href="<?php echo $cg_project_url; ?>" style="display:block;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:20px 24px;text-decoration:none;">
