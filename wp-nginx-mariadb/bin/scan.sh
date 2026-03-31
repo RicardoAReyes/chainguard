@@ -155,3 +155,7 @@ done
 # ── Sync results into WordPress Issue Tracker ─────────────────────────────────
 echo ""
 bash "${SCRIPT_DIR}/import-issues.sh"
+
+# ── Generate AI scan story blog post ──────────────────────────────────────────
+echo ""
+bash "${SCRIPT_DIR}/generate-scan-story.sh"

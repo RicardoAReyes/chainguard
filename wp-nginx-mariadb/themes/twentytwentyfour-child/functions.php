@@ -11,13 +11,20 @@ function ttf_hamburger_nav() {
     $menu_items = wp_get_nav_menu_items( 'Primary Menu' );
     if ( ! $menu_items ) return;
 
-    $nav_items = [];
+    // Build tree: top-level items with nested children
+    $top_items = [];
+    $children  = [];
     foreach ( $menu_items as $item ) {
-        if ( $item->menu_item_parent != 0 ) continue; // top-level only
-        $nav_items[] = [
-            'label' => $item->title,
-            'url'   => $item->url,
-        ];
+        if ( $item->menu_item_parent == 0 ) {
+            $top_items[ $item->db_id ] = [ 'item' => $item, 'children' => [] ];
+        } else {
+            $children[ $item->menu_item_parent ][] = $item;
+        }
+    }
+    foreach ( $children as $parent_id => $kids ) {
+        if ( isset( $top_items[ $parent_id ] ) ) {
+            $top_items[ $parent_id ]['children'] = $kids;
+        }
     }
 
     $current_path = rtrim( parse_url( home_url( $_SERVER['REQUEST_URI'] ), PHP_URL_PATH ), '/' );
@@ -29,15 +36,33 @@ function ttf_hamburger_nav() {
 <nav id="hbg-drawer" aria-label="Primary navigation" aria-hidden="true">
   <div id="hbg-drawer-brand">Chainguard Demo</div>
   <ul>
-    <?php foreach ( $nav_items as $i => $item ) :
-        $item_path = rtrim( parse_url( $item['url'], PHP_URL_PATH ), '/' );
-        $active    = $current_path === $item_path;
+    <?php $i = 0; foreach ( $top_items as $node ) :
+        $item        = $node['item'];
+        $kids        = $node['children'];
+        $item_path   = rtrim( parse_url( $item->url, PHP_URL_PATH ), '/' );
+        $active      = $current_path === $item_path;
+        $has_sub     = ! empty( $kids );
     ?>
-    <li style="--i:<?php echo $i; ?>">
-      <a href="<?php echo esc_url( $item['url'] ); ?>"
+    <li style="--i:<?php echo $i++; ?>"<?php if ( $has_sub ) echo ' class="has-submenu"'; ?>>
+      <a href="<?php echo esc_url( $item->url ); ?>"
          <?php if ( $active ) echo 'aria-current="page"'; ?>>
-        <?php echo esc_html( $item['label'] ); ?>
+        <?php echo esc_html( $item->title ); ?>
       </a>
+      <?php if ( $has_sub ) : ?>
+      <ul>
+        <?php foreach ( $kids as $child ) :
+            $child_path = rtrim( parse_url( $child->url, PHP_URL_PATH ), '/' );
+            $child_active = $current_path === $child_path;
+        ?>
+        <li>
+          <a href="<?php echo esc_url( $child->url ); ?>"
+             <?php if ( $child_active ) echo 'aria-current="page"'; ?>>
+            <?php echo esc_html( $child->title ); ?>
+          </a>
+        </li>
+        <?php endforeach; ?>
+      </ul>
+      <?php endif; ?>
     </li>
     <?php endforeach; ?>
   </ul>
@@ -71,6 +96,16 @@ function ttf_hamburger_nav() {
   overlay.addEventListener('click', closeNav);
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeNav();
+  });
+  // Submenu toggle on parent click
+  drawer.querySelectorAll('li.has-submenu > a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var li = this.parentElement;
+      if ( li.querySelector('ul') ) {
+        e.preventDefault();
+        li.classList.toggle('open');
+      }
+    });
   });
 })();
 </script>

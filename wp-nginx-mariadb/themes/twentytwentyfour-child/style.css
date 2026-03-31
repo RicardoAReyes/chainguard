@@ -273,6 +273,33 @@ header .wp-block-navigation .wp-block-navigation__container {
   padding-left: 10px;
 }
 
+/* Submenu items */
+#hbg-drawer li.has-submenu > a::after {
+  content: ' ›';
+  opacity: 0.5;
+  font-size: 0.9em;
+}
+#hbg-drawer ul ul {
+  padding-left: 14px;
+  margin-top: 0;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease;
+}
+#hbg-drawer li.has-submenu.open > ul {
+  max-height: 200px;
+}
+#hbg-drawer ul ul a {
+  font-size: 0.88em;
+  font-weight: 400;
+  color: #c9d1d9;
+  padding: 9px 0 9px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+#hbg-drawer ul ul a:hover {
+  color: var(--color-sandy);
+}
+
 /* Full-width layout for project and issue pages */
 
 .emd-wrap.emd-project .emdcontainer,
