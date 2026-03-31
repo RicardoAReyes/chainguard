@@ -117,7 +117,7 @@ The scanner runs **two sets of images in parallel**:
 
 Scanned images: `wordpress`, `nginx`, `mariadb`, `node`, `grype`, `prometheus`, `grafana`
 
-**Registry-direct scanning:** All images are scanned using the `registry:` scheme (e.g. `registry:cgr.dev/chainguard-private/nginx:latest`), which fetches the image manifest directly from the registry at scan time rather than using a locally cached layer. This ensures results always reflect Chainguard's latest daily-patched digest. The custom `wordpress-custom` image is the only exception — it is scanned from the local Docker daemon via `docker:wordpress-custom:latest`.
+**Always-fresh scanning:** Before scanning, `bin/scan.sh` runs `docker pull` on every image to fetch the latest digest from the registry. This uses Docker Desktop's keychain credentials (which Grype running inside a container cannot access directly) and ensures results always reflect Chainguard's latest daily-patched image. The custom `wordpress-custom` image is the only exception — it is a local build and is never pulled.
 
 A summary table is printed for both sets at the end of each run. Results feed the metrics-exporter → Prometheus → Grafana pipeline **and** the WordPress Issue Tracker automatically.
 

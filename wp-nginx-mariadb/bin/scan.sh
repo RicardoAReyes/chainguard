@@ -29,30 +29,45 @@ grype() {
     "$@"
 }
 
-# Chainguard hardened images — scanned directly from the registry so results
-# always reflect the latest daily-patched digest, not a locally cached layer.
+# Images are pulled fresh before scanning so Grype always sees the latest
+# registry digest. docker pull uses Docker Desktop's keychain credentials,
+# avoiding the auth issue that arises when Grype tries to hit cgr.dev directly.
 CG_IMAGES=(
-  "wordpress:docker:wordpress-custom:latest"
-  "nginx:registry:cgr.dev/chainguard-private/nginx:latest"
-  "mariadb:registry:cgr.dev/chainguard-private/mariadb:latest"
-  "node:registry:cgr.dev/chainguard-private/node:latest"
-  "grype:registry:cgr.dev/chainguard-private/grype:latest"
-  "prometheus:registry:cgr.dev/chainguard-private/prometheus:latest"
-  "grafana:registry:cgr.dev/chainguard-private/grafana:latest"
+  "wordpress:wordpress-custom:latest"
+  "nginx:cgr.dev/chainguard-private/nginx:latest"
+  "mariadb:cgr.dev/chainguard-private/mariadb:latest"
+  "node:cgr.dev/chainguard-private/node:latest"
+  "grype:cgr.dev/chainguard-private/grype:latest"
+  "prometheus:cgr.dev/chainguard-private/prometheus:latest"
+  "grafana:cgr.dev/chainguard-private/grafana:latest"
 )
 
-# Docker Hub images — scanned directly from the registry for the same reason.
 DHI_IMAGES=(
-  "wordpress:registry:docker.io/library/wordpress:latest"
-  "nginx:registry:docker.io/library/nginx:latest"
-  "mariadb:registry:docker.io/library/mariadb:latest"
-  "node:registry:docker.io/library/node:lts"
-  "grype:registry:docker.io/anchore/grype:latest"
-  "prometheus:registry:docker.io/prom/prometheus:latest"
-  "grafana:registry:docker.io/grafana/grafana:latest"
+  "wordpress:wordpress:latest"
+  "nginx:nginx:latest"
+  "mariadb:mariadb:latest"
+  "node:node:lts"
+  "grype:anchore/grype:latest"
+  "prometheus:prom/prometheus:latest"
+  "grafana:grafana/grafana:latest"
 )
 
 log "Timestamp: ${TS}"
+log "Pulling latest images from registry before scanning..."
+echo ""
+for entry in "${CG_IMAGES[@]}" "${DHI_IMAGES[@]}"; do
+  name="${entry%%:*}"
+  image="${entry#*:}"
+  # wordpress-custom is a local build — skip pull
+  if [[ "${image}" == "wordpress-custom:latest" ]]; then
+    log "  skip pull (local build): ${image}"
+    continue
+  fi
+  log "  docker pull ${image}"
+  docker pull "${image}" --quiet || log "  WARNING: pull failed for ${image}"
+done
+echo ""
+
 log "Scanning ${#CG_IMAGES[@]} Chainguard + ${#DHI_IMAGES[@]} DHI images in parallel..."
 echo ""
 

@@ -387,6 +387,107 @@ function ttf_issue_dashboard() {
   </div>
 </div>
 
+<!-- ── Full scan summary table (all severities) ───────────────────────────── -->
+<?php
+$scan_summary = get_option( 'grype_scan_summary', [] );
+$severities   = [ 'Critical', 'High', 'Medium', 'Low', 'Unknown' ];
+$sev_colors   = [
+    'Critical' => '#E07A5F',
+    'High'     => '#d97706',
+    'Medium'   => '#6b7280',
+    'Low'      => '#9ca3af',
+    'Unknown'  => '#d1d5db',
+];
+if ( ! empty( $scan_summary ) ) : ?>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;margin-bottom:24px;overflow-x:auto;">
+  <h2 style="font-size:1.1em;font-weight:700;color:#3D405B;margin:0 0 16px;">Full Scan Summary — All Severities</h2>
+  <table style="width:100%;border-collapse:collapse;font-size:0.84em;">
+    <thead>
+      <tr style="background:#3D405B;color:#fff;">
+        <th style="padding:10px 14px;text-align:left;" rowspan="2">Image</th>
+        <th style="padding:6px 14px;text-align:center;border-bottom:1px solid #555;letter-spacing:.05em;" colspan="6">🟢 Chainguard</th>
+        <th style="padding:6px 14px;text-align:center;border-bottom:1px solid #555;letter-spacing:.05em;" colspan="6">🔴 DHI</th>
+        <th style="padding:6px 14px;text-align:center;" rowspan="2">Reduction</th>
+      </tr>
+      <tr style="background:#2a2d40;color:#c9d1d9;font-size:0.9em;">
+        <?php foreach ( $severities as $s ) : ?>
+        <th style="padding:6px 10px;text-align:center;"><?php echo $s; ?></th>
+        <?php endforeach; ?>
+        <th style="padding:6px 10px;text-align:center;font-weight:700;color:#fff;">CG Total</th>
+        <?php foreach ( $severities as $s ) : ?>
+        <th style="padding:6px 10px;text-align:center;"><?php echo $s; ?></th>
+        <?php endforeach; ?>
+        <th style="padding:6px 10px;text-align:center;font-weight:700;color:#fff;">DHI Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php
+      $row_i = 0;
+      foreach ( $images as $img ) :
+          $cg  = $scan_summary['cg'][$img]  ?? array_fill_keys( array_merge( $severities, ['Total'] ), 0 );
+          $dhi = $scan_summary['dhi'][$img] ?? array_fill_keys( array_merge( $severities, ['Total'] ), 0 );
+          $row_bg = $row_i++ % 2 === 0 ? '#fff' : '#f8fafc';
+      ?>
+      <tr style="background:<?php echo $row_bg; ?>;border-bottom:1px solid #e2e8f0;">
+        <td style="padding:8px 14px;font-weight:600;color:#3D405B;"><?php echo esc_html( $img ); ?></td>
+        <?php foreach ( $severities as $s ) :
+            $val = $cg[$s] ?? 0;
+            $color = $val > 0 ? $sev_colors[$s] : '#9ca3af';
+        ?>
+        <td style="padding:8px 10px;text-align:center;color:<?php echo $color; ?>;font-weight:<?php echo $val > 0 ? '700' : '400'; ?>;"><?php echo $val; ?></td>
+        <?php endforeach; ?>
+        <td style="padding:8px 10px;text-align:center;font-weight:700;color:#3D405B;"><?php echo $cg['Total'] ?? 0; ?></td>
+        <?php foreach ( $severities as $s ) :
+            $val = $dhi[$s] ?? 0;
+            $color = $val > 0 ? $sev_colors[$s] : '#9ca3af';
+        ?>
+        <td style="padding:8px 10px;text-align:center;color:<?php echo $color; ?>;font-weight:<?php echo $val > 0 ? '700' : '400'; ?>;"><?php echo $val; ?></td>
+        <?php endforeach; ?>
+        <td style="padding:8px 10px;text-align:center;font-weight:700;color:#3D405B;"><?php echo $dhi['Total'] ?? 0; ?></td>
+        <?php
+        $ct = $cg['Total'] ?? 0;
+        $dt = $dhi['Total'] ?? 0;
+        $red = $dt > 0 ? round( (1 - $ct / $dt) * 100 ) : 0;
+        $red_color = $red >= 80 ? '#16a34a' : ( $red >= 50 ? '#65a30d' : ( $red >= 0 ? '#ca8a04' : '#dc2626' ) );
+        ?>
+        <td style="padding:8px 10px;text-align:center;font-weight:700;color:<?php echo $red_color; ?>;"><?php echo $red; ?>%</td>
+      </tr>
+      <?php endforeach; ?>
+      <?php
+      // Totals row
+      $cg_sev_totals  = array_fill_keys( $severities, 0 );
+      $dhi_sev_totals = array_fill_keys( $severities, 0 );
+      $cg_grand = 0; $dhi_grand = 0;
+      foreach ( $images as $img ) {
+          foreach ( $severities as $s ) {
+              $cg_sev_totals[$s]  += $scan_summary['cg'][$img][$s]  ?? 0;
+              $dhi_sev_totals[$s] += $scan_summary['dhi'][$img][$s] ?? 0;
+          }
+          $cg_grand  += $scan_summary['cg'][$img]['Total']  ?? 0;
+          $dhi_grand += $scan_summary['dhi'][$img]['Total'] ?? 0;
+      }
+      ?>
+      <tr style="background:#f1f5f9;border-top:2px solid #3D405B;font-weight:700;">
+        <td style="padding:9px 14px;color:#3D405B;">TOTAL</td>
+        <?php foreach ( $severities as $s ) : ?>
+        <td style="padding:9px 10px;text-align:center;color:<?php echo $sev_colors[$s]; ?>;"><?php echo $cg_sev_totals[$s]; ?></td>
+        <?php endforeach; ?>
+        <td style="padding:9px 10px;text-align:center;color:#3D405B;"><?php echo $cg_grand; ?></td>
+        <?php foreach ( $severities as $s ) : ?>
+        <td style="padding:9px 10px;text-align:center;color:<?php echo $sev_colors[$s]; ?>;"><?php echo $dhi_sev_totals[$s]; ?></td>
+        <?php endforeach; ?>
+        <td style="padding:9px 10px;text-align:center;color:#3D405B;"><?php echo $dhi_grand; ?></td>
+        <?php
+        $grand_red = $dhi_grand > 0 ? round( (1 - $cg_grand / $dhi_grand) * 100 ) : 0;
+        $grand_red_color = $grand_red >= 80 ? '#16a34a' : ( $grand_red >= 50 ? '#65a30d' : '#ca8a04' );
+        ?>
+        <td style="padding:9px 10px;text-align:center;font-weight:700;color:<?php echo $grand_red_color; ?>;"><?php echo $grand_red; ?>%</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<?php endif; ?>
+
 <!-- ── Per-container breakdown table ─────────────────────────────────────── -->
 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;margin-bottom:24px;overflow-x:auto;">
   <h2 style="font-size:1.1em;font-weight:700;color:#3D405B;margin:0 0 16px;">Per-Container Breakdown</h2>

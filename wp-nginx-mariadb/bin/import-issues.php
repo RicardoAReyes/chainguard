@@ -229,6 +229,32 @@ function sync_issues($project_id, $scan_type, $images, $open_term_id, $bug_term_
     echo "  Total: $created issues created\n";
 }
 
+// ── Build full severity summary from scan files ───────────────────────────────
+
+function build_scan_summary($images) {
+    $severities = ['Critical', 'High', 'Medium', 'Low', 'Unknown'];
+    $summary = [];
+    foreach (['cg', 'dhi'] as $scan_type) {
+        $summary[$scan_type] = [];
+        foreach ($images as $image) {
+            $scan_file = "/tmp/scans/{$image}/{$scan_type}_latest.json";
+            $counts = array_fill_keys($severities, 0);
+            if (file_exists($scan_file)) {
+                $data    = json_decode(file_get_contents($scan_file), true);
+                $matches = $data['matches'] ?? [];
+                foreach ($matches as $match) {
+                    $sev = $match['vulnerability']['severity'] ?? 'Unknown';
+                    if (isset($counts[$sev])) $counts[$sev]++;
+                    else $counts['Unknown']++;
+                }
+            }
+            $counts['Total'] = array_sum($counts);
+            $summary[$scan_type][$image] = $counts;
+        }
+    }
+    return $summary;
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 echo "\n=== Chainguard Software Issues ===\n";
@@ -239,7 +265,9 @@ echo "\n=== DHI Software Issues ===\n";
 $dhi_project_id = get_or_create_project('DHI Software Issues', 'dhi-software-issues');
 sync_issues($dhi_project_id, 'dhi', $images, $open_term_id, $bug_term_id, $priority_map);
 
-// Save import timestamp for dashboard display
+// Save full severity summary and import timestamp for dashboard display
+$scan_summary = build_scan_summary($images);
+update_option( 'grype_scan_summary',  $scan_summary );
 update_option( 'grype_last_import', current_time( 'mysql' ) );
 
 echo "\nDone.\n";
