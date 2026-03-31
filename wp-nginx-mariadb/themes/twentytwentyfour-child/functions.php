@@ -1,5 +1,173 @@
 <?php
+// Remove Software Issue Manager marketing/review notices from admin
+add_action( 'admin_init', function () {
+    remove_action( 'admin_notices', 'software_issue_manager_show_optin' );
+} );
+
+// ── Hamburger navigation ───────────────────────────────────────────────────
+add_action( 'wp_footer', 'ttf_hamburger_nav' );
+
+function ttf_hamburger_nav() {
+    $menu_items = wp_get_nav_menu_items( 'Primary Menu' );
+    if ( ! $menu_items ) return;
+
+    $nav_items = [];
+    foreach ( $menu_items as $item ) {
+        if ( $item->menu_item_parent != 0 ) continue; // top-level only
+        $nav_items[] = [
+            'label' => $item->title,
+            'url'   => $item->url,
+        ];
+    }
+
+    $current_path = rtrim( parse_url( home_url( $_SERVER['REQUEST_URI'] ), PHP_URL_PATH ), '/' );
+    ?>
+<button id="hbg-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="hbg-drawer">
+  <span></span><span></span><span></span>
+</button>
+<div id="hbg-overlay" aria-hidden="true"></div>
+<nav id="hbg-drawer" aria-label="Primary navigation" aria-hidden="true">
+  <div id="hbg-drawer-brand">Chainguard Demo</div>
+  <ul>
+    <?php foreach ( $nav_items as $i => $item ) :
+        $item_path = rtrim( parse_url( $item['url'], PHP_URL_PATH ), '/' );
+        $active    = $current_path === $item_path;
+    ?>
+    <li style="--i:<?php echo $i; ?>">
+      <a href="<?php echo esc_url( $item['url'] ); ?>"
+         <?php if ( $active ) echo 'aria-current="page"'; ?>>
+        <?php echo esc_html( $item['label'] ); ?>
+      </a>
+    </li>
+    <?php endforeach; ?>
+  </ul>
+</nav>
+<script>
+(function(){
+  var btn     = document.getElementById('hbg-btn');
+  var overlay = document.getElementById('hbg-overlay');
+  var drawer  = document.getElementById('hbg-drawer');
+  function openNav() {
+    btn.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeNav() {
+    btn.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  btn.addEventListener('click', function() {
+    btn.classList.contains('open') ? closeNav() : openNav();
+  });
+  overlay.addEventListener('click', closeNav);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeNav();
+  });
+})();
+</script>
+    <?php
+}
+
+// ── Chainguard Unchained RSS feed shortcode ────────────────────────────────
+add_shortcode( 'chainguard_unchained', 'ttf_chainguard_unchained' );
+
+function ttf_chainguard_unchained() {
+    include_once ABSPATH . WPINC . '/feed.php';
+
+    $feed = fetch_feed( 'https://www.chainguard.dev/unchained/rss.xml' );
+    if ( is_wp_error( $feed ) ) {
+        return '<p style="color:#6b7280;">Unable to load Chainguard Unchained feed at this time.</p>';
+    }
+
+    $items    = $feed->get_items( 0, 7 );
+    $featured = array_shift( $items ); // first item = featured
+    // remaining 6 = latest updates
+
+    ob_start(); ?>
+
+<div style="font-family:inherit;">
+
+  <!-- ── Featured post ─────────────────────────────────────────────────── -->
+  <?php if ( $featured ) :
+      $date = $featured->get_date( 'M j, Y' );
+  ?>
+  <div style="background:linear-gradient(135deg,#3D405B 0%,#2a2d40 100%);border-radius:12px;padding:36px 40px;margin-bottom:32px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:0;right:0;width:300px;height:100%;background:rgba(129,178,154,0.08);clip-path:polygon(30% 0,100% 0,100% 100%,0 100%);"></div>
+    <div style="position:relative;">
+      <span style="display:inline-block;background:#81B29A;color:#fff;font-size:0.72em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 12px;border-radius:20px;margin-bottom:14px;">Featured</span>
+      <h2 style="margin:0 0 12px;font-size:1.45em;font-weight:700;line-height:1.3;">
+        <a href="<?php echo esc_url( $featured->get_permalink() ); ?>" target="_blank" rel="noopener"
+           style="color:#fff;text-decoration:none;"
+           onmouseover="this.style.color='#F2CC8F'" onmouseout="this.style.color='#fff'">
+          <?php echo esc_html( $featured->get_title() ); ?>
+        </a>
+      </h2>
+      <p style="margin:0 0 18px;color:#c9d1d9;line-height:1.65;max-width:680px;font-size:0.95em;">
+        <?php echo esc_html( wp_trim_words( $featured->get_description(), 28, '…' ) ); ?>
+      </p>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <span style="color:#8b9ab0;font-size:0.8em;"><?php echo esc_html( $date ); ?></span>
+        <a href="<?php echo esc_url( $featured->get_permalink() ); ?>" target="_blank" rel="noopener"
+           style="display:inline-block;background:#E07A5F;color:#fff;font-size:0.85em;font-weight:600;padding:7px 20px;border-radius:6px;text-decoration:none;"
+           onmouseover="this.style.background='#c95f44'" onmouseout="this.style.background='#E07A5F'">
+          Read article →
+        </a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <!-- ── Latest updates ────────────────────────────────────────────────── -->
+  <h3 style="font-size:1em;font-weight:700;color:#3D405B;margin:0 0 16px;letter-spacing:.04em;text-transform:uppercase;border-left:4px solid #E07A5F;padding-left:10px;">Latest Updates</h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:12px;">
+    <?php foreach ( $items as $item ) :
+        $date = $item->get_date( 'M j, Y' );
+    ?>
+    <a href="<?php echo esc_url( $item->get_permalink() ); ?>" target="_blank" rel="noopener"
+       style="display:block;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;text-decoration:none;transition:box-shadow .15s;"
+       onmouseover="this.style.boxShadow='0 4px 16px rgba(61,64,91,.1)';this.style.borderColor='#81B29A'"
+       onmouseout="this.style.boxShadow='none';this.style.borderColor='#e2e8f0'">
+      <p style="margin:0 0 8px;font-weight:600;color:#3D405B;font-size:0.92em;line-height:1.4;">
+        <?php echo esc_html( $item->get_title() ); ?>
+      </p>
+      <p style="margin:0 0 12px;color:#6b7280;font-size:0.82em;line-height:1.5;">
+        <?php echo esc_html( wp_trim_words( $item->get_description(), 18, '…' ) ); ?>
+      </p>
+      <span style="color:#81B29A;font-size:0.78em;font-weight:600;"><?php echo esc_html( $date ); ?> →</span>
+    </a>
+    <?php endforeach; ?>
+  </div>
+
+  <p style="text-align:right;margin:4px 0 0;">
+    <a href="https://www.chainguard.dev/unchained" target="_blank" rel="noopener"
+       style="font-size:0.82em;color:#81B29A;text-decoration:none;font-weight:600;">
+      View all posts on Chainguard Unchained →
+    </a>
+  </p>
+
+</div>
+<?php
+    return ob_get_clean();
+}
+
 function ttf_child_enqueue_scripts() {
+    // Child theme stylesheet (style.css)
+    wp_enqueue_style(
+        'ttf-child-style',
+        get_stylesheet_uri(),
+        [ 'wp-block-library' ],
+        wp_get_theme()->get( 'Version' )
+    );
+
     $asset_file = get_stylesheet_directory() . '/build/index.asset.php';
     $asset = file_exists( $asset_file )
         ? require( $asset_file )

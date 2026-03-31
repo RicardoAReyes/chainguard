@@ -144,6 +144,135 @@ footer a:hover {
   color: var(--color-sage) !important;
 }
 
+/* ── Hamburger navigation ─────────────────────────────────────────────────── */
+
+/* Hide existing block nav links */
+header .wp-block-navigation .wp-block-navigation__container {
+  display: none !important;
+}
+
+/* Hamburger button */
+#hbg-btn {
+  position: fixed;
+  top: 16px;
+  right: 24px;
+  z-index: 10000;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+}
+#hbg-btn span {
+  display: block;
+  height: 2px;
+  background: var(--color-eggshell);
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.2s ease, width 0.2s ease;
+  transform-origin: center;
+}
+#hbg-btn span:nth-child(3) {
+  width: 65%;
+  align-self: flex-end;
+}
+#hbg-btn.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+#hbg-btn.open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+#hbg-btn.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+  width: 100%;
+}
+
+/* Backdrop overlay */
+#hbg-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#hbg-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Slide-out drawer */
+#hbg-drawer {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 300px;
+  height: 100vh;
+  background: var(--color-space-cadet);
+  z-index: 9999;
+  padding: 80px 32px 40px;
+  transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -4px 0 32px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+}
+#hbg-drawer.open {
+  right: 0;
+}
+
+/* Drawer branding */
+#hbg-drawer-brand {
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--color-sage);
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Nav list */
+#hbg-drawer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#hbg-drawer li {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition-delay: calc(var(--i) * 0.06s);
+}
+#hbg-drawer.open li {
+  opacity: 1;
+  transform: translateX(0);
+}
+#hbg-drawer a {
+  display: block;
+  color: var(--color-eggshell);
+  font-size: 1.1em;
+  font-weight: 600;
+  padding: 13px 0 13px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-decoration: none;
+  transition: color 0.2s, padding-left 0.2s;
+}
+#hbg-drawer a:hover {
+  color: var(--color-sandy);
+  padding-left: 10px;
+}
+#hbg-drawer a[aria-current="page"] {
+  color: var(--color-terra-cotta);
+  border-left: 3px solid var(--color-terra-cotta);
+  padding-left: 10px;
+}
+
 /* Full-width layout for project and issue pages */
 
 .emd-wrap.emd-project .emdcontainer,
