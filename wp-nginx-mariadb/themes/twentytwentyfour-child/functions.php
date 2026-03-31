@@ -429,9 +429,9 @@ if ( ! empty( $scan_summary ) ) : ?>
         <?php endforeach; ?>
         <th style="padding:6px 10px;text-align:center;font-weight:700;color:#fff;">CG Total</th>
         <?php foreach ( $severities as $s ) : ?>
-        <th style="padding:6px 10px;text-align:center;"><?php echo $s; ?></th>
+        <th style="padding:6px 10px;text-align:center;background:#4a2020;"><?php echo $s; ?></th>
         <?php endforeach; ?>
-        <th style="padding:6px 10px;text-align:center;font-weight:700;color:#fff;">DHI Total</th>
+        <th style="padding:6px 10px;text-align:center;font-weight:700;color:#fff;background:#4a2020;">DHI Total</th>
       </tr>
     </thead>
     <tbody>
@@ -455,9 +455,9 @@ if ( ! empty( $scan_summary ) ) : ?>
             $val = $dhi[$s] ?? 0;
             $color = $val > 0 ? $sev_colors[$s] : '#9ca3af';
         ?>
-        <td style="padding:8px 10px;text-align:center;color:<?php echo $color; ?>;font-weight:<?php echo $val > 0 ? '700' : '400'; ?>;"><?php echo $val; ?></td>
+        <td style="padding:8px 10px;text-align:center;color:<?php echo $color; ?>;font-weight:<?php echo $val > 0 ? '700' : '400'; ?>;background:#fff5f5;"><?php echo $val; ?></td>
         <?php endforeach; ?>
-        <td style="padding:8px 10px;text-align:center;font-weight:700;color:#3D405B;"><?php echo $dhi['Total'] ?? 0; ?></td>
+        <td style="padding:8px 10px;text-align:center;font-weight:700;color:#3D405B;background:#fff5f5;"><?php echo $dhi['Total'] ?? 0; ?></td>
         <?php
         $ct = $cg['Total'] ?? 0;
         $dt = $dhi['Total'] ?? 0;
@@ -488,9 +488,9 @@ if ( ! empty( $scan_summary ) ) : ?>
         <?php endforeach; ?>
         <td style="padding:9px 10px;text-align:center;color:#3D405B;"><?php echo $cg_grand; ?></td>
         <?php foreach ( $severities as $s ) : ?>
-        <td style="padding:9px 10px;text-align:center;color:<?php echo $sev_colors[$s]; ?>;"><?php echo $dhi_sev_totals[$s]; ?></td>
+        <td style="padding:9px 10px;text-align:center;color:<?php echo $sev_colors[$s]; ?>;background:#fde8e8;"><?php echo $dhi_sev_totals[$s]; ?></td>
         <?php endforeach; ?>
-        <td style="padding:9px 10px;text-align:center;color:#3D405B;"><?php echo $dhi_grand; ?></td>
+        <td style="padding:9px 10px;text-align:center;color:#3D405B;background:#fde8e8;"><?php echo $dhi_grand; ?></td>
         <?php
         $grand_red = $dhi_grand > 0 ? round( (1 - $cg_grand / $dhi_grand) * 100 ) : 0;
         $grand_red_color = $grand_red >= 80 ? '#16a34a' : ( $grand_red >= 50 ? '#65a30d' : '#ca8a04' );
@@ -540,7 +540,7 @@ usort( $all_issues_posts, function( $a, $b ) {
 ?>
 <div class="alignfull" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;margin-bottom:24px;overflow-x:auto;">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-    <h2 style="font-size:1.1em;font-weight:700;color:#3D405B;margin:0;">All Issues <span style="font-size:0.75em;font-weight:400;color:#6b7280;">(<?php echo count( $all_issues_posts ); ?> total)</span></h2>
+    <h2 style="font-size:1.1em;font-weight:700;color:#3D405B;margin:0;">All Issues <span id="ail-count" style="font-size:0.75em;font-weight:400;color:#6b7280;">(<?php echo count( $all_issues_posts ); ?> total)</span></h2>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <select id="ail-f-scan" style="font-size:0.82em;padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;color:#3D405B;">
         <option value="">All scan types</option>
@@ -610,6 +610,7 @@ usort( $all_issues_posts, function( $a, $b ) {
 (function(){
   var rows   = Array.from(document.querySelectorAll('#ail-table tbody tr'));
   var empty  = document.getElementById('ail-empty');
+  var count  = document.getElementById('ail-count');
   var filters = {
     scan: document.getElementById('ail-f-scan'),
     sev:  document.getElementById('ail-f-sev'),
@@ -628,6 +629,7 @@ usort( $all_issues_posts, function( $a, $b ) {
       if (show) visible++;
     });
     empty.style.display = visible === 0 ? '' : 'none';
+    count.textContent = '(' + visible + ' total)';
   }
   filters.scan.addEventListener('change', apply);
   filters.sev.addEventListener('change', apply);
