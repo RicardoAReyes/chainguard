@@ -553,7 +553,7 @@ function ttf_issue_dashboard() {
 <div style="background:linear-gradient(135deg,#3D405B 0%,#2a2d40 100%);color:#fff;padding:40px;border-radius:12px;margin-bottom:32px;text-align:center;">
   <div style="font-size:44px;margin-bottom:10px;">🛡️</div>
   <h1 style="margin:0 0 8px;font-size:2em;font-weight:700;">Issue Tracker Dashboard</h1>
-  <p style="margin:0;color:#c9d1d9;max-width:560px;margin:0 auto;">Critical &amp; High severity CVEs detected by Grype across Chainguard and Docker Hardened Images.</p>
+  <p style="margin:0;color:#c9d1d9;max-width:560px;margin:0 auto;">Critical &amp; High severity CVEs detected by Grype across Chainguard and Docker Hub.</p>
   <p style="margin:12px 0 0;font-size:0.8em;color:#8b9ab0;">🕐 Last scanned: <?php echo $last_import; ?></p>
 </div>
 
@@ -566,29 +566,29 @@ function ttf_issue_dashboard() {
   </div>
   <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:22px;text-align:center;">
     <div style="font-size:2.2em;font-weight:800;color:#dc2626;"><?php echo $dhi_total; ?></div>
-    <div style="font-size:0.82em;color:#4a5568;margin-top:4px;font-weight:600;">DHI Issues</div>
+    <div style="font-size:0.82em;color:#4a5568;margin-top:4px;font-weight:600;">Docker Hub Issues</div>
     <div style="font-size:0.75em;color:#6b7280;margin-top:2px;"><?php echo $dhi_critical; ?> Critical · <?php echo $dhi_high; ?> High</div>
   </div>
   <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:22px;text-align:center;">
     <div style="font-size:2.2em;font-weight:800;color:#2563eb;"><?php echo $pct_fewer; ?>%</div>
     <div style="font-size:0.82em;color:#4a5568;margin-top:4px;font-weight:600;">Fewer CVEs</div>
-    <div style="font-size:0.75em;color:#6b7280;margin-top:2px;">Chainguard vs DHI</div>
+    <div style="font-size:0.75em;color:#6b7280;margin-top:2px;">Chainguard vs Docker Hub</div>
   </div>
   <div style="background:#fefce8;border:1px solid #fef08a;border-radius:10px;padding:22px;text-align:center;">
     <div style="font-size:2.2em;font-weight:800;color:#ca8a04;"><?php echo $cg_critical; ?></div>
     <div style="font-size:0.82em;color:#4a5568;margin-top:4px;font-weight:600;">CG Critical</div>
-    <div style="font-size:0.75em;color:#6b7280;margin-top:2px;">vs <?php echo $dhi_critical; ?> in DHI</div>
+    <div style="font-size:0.75em;color:#6b7280;margin-top:2px;">vs <?php echo $dhi_critical; ?> on Docker Hub</div>
   </div>
   <div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:10px;padding:22px;text-align:center;">
     <div style="font-size:2.2em;font-weight:800;color:#9333ea;"><?php echo count( $images ) * 2; ?></div>
     <div style="font-size:0.82em;color:#4a5568;margin-top:4px;font-weight:600;">Images Scanned</div>
-    <div style="font-size:0.75em;color:#6b7280;margin-top:2px;"><?php echo count( $images ); ?> CG &amp; <?php echo count( $images ); ?> DHI</div>
+    <div style="font-size:0.75em;color:#6b7280;margin-top:2px;"><?php echo count( $images ); ?> CG &amp; <?php echo count( $images ); ?> Docker Hub</div>
   </div>
 </div>
 
 <!-- ── Grouped bar chart: CG vs DHI by container ─────────────────────────── -->
 <div class="alignfull" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;margin-bottom:24px;">
-  <h2 style="font-size:1.1em;font-weight:700;color:#3D405B;margin:0 0 20px;">Issues by Container — Chainguard vs DHI</h2>
+  <h2 style="font-size:1.1em;font-weight:700;color:#3D405B;margin:0 0 20px;">Issues by Container — Chainguard vs Docker Hub</h2>
   <canvas id="iddContainerChart" height="90"></canvas>
 </div>
 
@@ -599,7 +599,7 @@ function ttf_issue_dashboard() {
     <canvas id="iddCgDonut" height="160"></canvas>
   </div>
   <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:28px;">
-    <h2 style="font-size:1.05em;font-weight:700;color:#3D405B;margin:0 0 16px;">🔴 DHI — Severity Split</h2>
+    <h2 style="font-size:1.05em;font-weight:700;color:#3D405B;margin:0 0 16px;">🔴 Docker Hub — Severity Split</h2>
     <canvas id="iddDhiDonut" height="160"></canvas>
   </div>
 </div>
@@ -623,7 +623,7 @@ if ( ! empty( $scan_summary ) ) : ?>
       <tr style="background:#3D405B;color:#fff;">
         <th style="padding:10px 14px;text-align:left;" rowspan="2">Image</th>
         <th style="padding:6px 14px;text-align:center;border-bottom:1px solid #555;letter-spacing:.05em;" colspan="6">🟢 Chainguard</th>
-        <th style="padding:6px 14px;text-align:center;border-bottom:1px solid #555;letter-spacing:.05em;" colspan="6">🔴 DHI</th>
+        <th style="padding:6px 14px;text-align:center;border-bottom:1px solid #555;letter-spacing:.05em;" colspan="6">🔴 Docker Hub</th>
         <th style="padding:6px 14px;text-align:center;" rowspan="2">Reduction</th>
       </tr>
       <tr style="background:#2a2d40;color:#c9d1d9;font-size:0.9em;">
@@ -634,7 +634,7 @@ if ( ! empty( $scan_summary ) ) : ?>
         <?php foreach ( $severities as $s ) : ?>
         <th style="padding:6px 10px;text-align:center;background:#4a2020;"><?php echo $s; ?></th>
         <?php endforeach; ?>
-        <th style="padding:6px 10px;text-align:center;font-weight:700;color:#fff;background:#4a2020;">DHI Total</th>
+        <th style="padding:6px 10px;text-align:center;font-weight:700;color:#fff;background:#4a2020;">Docker Hub Total</th>
       </tr>
     </thead>
     <tbody>
@@ -712,7 +712,7 @@ if ( ! empty( $scan_summary ) ) : ?>
     <div style="font-size:0.83em;color:#4a5568;margin-top:4px;"><?php echo $cg_total; ?> open issues across <?php echo count($images); ?> images</div>
   </a>
   <a href="<?php echo $dhi_project_url; ?>" style="display:block;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:20px 24px;text-decoration:none;">
-    <div style="font-weight:700;color:#dc2626;font-size:1.05em;">🔴 DHI Issues →</div>
+    <div style="font-weight:700;color:#dc2626;font-size:1.05em;">🔴 Docker Hub Issues →</div>
     <div style="font-size:0.83em;color:#4a5568;margin-top:4px;"><?php echo $dhi_total; ?> open issues across <?php echo count($images); ?> images</div>
   </a>
 </div>
@@ -748,7 +748,7 @@ usort( $all_issues_posts, function( $a, $b ) {
       <select id="ail-f-scan" style="font-size:0.82em;padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;color:#3D405B;">
         <option value="">All scan types</option>
         <option value="cg">Chainguard</option>
-        <option value="dhi">DHI</option>
+        <option value="dhi">Docker Hub</option>
       </select>
       <select id="ail-f-sev" style="font-size:0.82em;padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;color:#3D405B;">
         <option value="">All severities</option>
@@ -788,7 +788,7 @@ usort( $all_issues_posts, function( $a, $b ) {
         $desc     = mb_strlen( $desc ) > 160 ? mb_substr( $desc, 0, 160 ) . '…' : $desc;
         $sev_bg   = $sev === 'Critical' ? '#E07A5F' : '#F2CC8F';
         $sev_fg   = $sev === 'Critical' ? '#fff' : '#3D405B';
-        $scan_label = $scan === 'cg' ? 'Chainguard' : 'DHI';
+        $scan_label = $scan === 'cg' ? 'Chainguard' : 'Docker Hub';
         $scan_bg    = $scan === 'cg' ? '#f0fdf4' : '#fef2f2';
         $scan_fg    = $scan === 'cg' ? '#166534'  : '#991b1b';
         $row_bg   = $i % 2 === 0 ? '#fff' : '#f8fafc';
@@ -873,7 +873,7 @@ usort( $all_issues_posts, function( $a, $b ) {
           datasets: [
             { label: 'Chainguard', data: images.map(function(_,i){ return cgCrit[i]+cgHigh[i]; }),
               backgroundColor: '#81B29A', borderColor: '#62967a', borderWidth: 1.5, borderRadius: 4 },
-            { label: 'DHI',        data: images.map(function(_,i){ return dhiCrit[i]+dhiHigh[i]; }),
+            { label: 'Docker Hub', data: images.map(function(_,i){ return dhiCrit[i]+dhiHigh[i]; }),
               backgroundColor: '#E07A5F', borderColor: '#c95f44', borderWidth: 1.5, borderRadius: 4 }
           ]
         },

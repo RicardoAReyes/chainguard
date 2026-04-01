@@ -162,7 +162,7 @@ $clean_para = $clean_count > 0
 $best_para = "The most dramatic result came from the {$best_img_cap} image. Docker's version carried {$best_win['dhi']} known vulnerabilities. Chainguard's version had {$best_win['cg']}. That is a difference of {$best_win['diff']} security gaps — in a single container image. For context, a CVE (Common Vulnerability and Exposure) is a publicly known software flaw that attackers can exploit. Each one represents a real risk.";
 
 $critical_para = $dhi_critical > 0
-    ? "Among the findings, DHI images contained {$dhi_critical} critical-severity vulnerabilities — the kind that security teams scramble to patch because they can lead directly to data breaches or system takeovers. Chainguard images carried {$cg_critical}."
+    ? "Among the findings, Docker Hub images contained {$dhi_critical} critical-severity vulnerabilities — the kind that security teams scramble to patch because they can lead directly to data breaches or system takeovers. Chainguard images carried {$cg_critical}."
     : "None of the Chainguard images carried critical-severity vulnerabilities this scan cycle — the highest-risk category that typically triggers emergency patching procedures.";
 
 $conclusion = "Across all {$pct_reduction}% of the vulnerabilities that Chainguard eliminated, every single one is a risk your team does not have to track, patch, or explain to leadership. In a world where the next supply chain attack is always one dependency away, starting with fewer vulnerabilities is not just convenient — it is a strategy.";
@@ -222,7 +222,7 @@ $post_content = <<<HTML
     <div style="width:1px;background:rgba(255,255,255,0.12);margin:8px 0;"></div>
     <div style="flex:1;min-width:100px;text-align:center;padding:8px 16px;">
       <div style="font-size:2.8em;font-weight:800;color:#F2CC8F;line-height:1;">{$dhi_total}</div>
-      <div style="font-size:0.78em;color:#c9d1d9;margin-top:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">DHI CVEs</div>
+      <div style="font-size:0.78em;color:#c9d1d9;margin-top:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Docker Hub CVEs</div>
     </div>
     <div style="width:1px;background:rgba(255,255,255,0.12);margin:8px 0;"></div>
     <div style="flex:1;min-width:100px;text-align:center;padding:8px 16px;">
@@ -248,7 +248,7 @@ $post_content = <<<HTML
       <thead>
         <tr style="background:#f8fafc;border-bottom:2px solid #e5e7eb;">
           <th style="padding:10px 14px;text-align:left;font-size:0.8em;color:#6b7280;font-weight:600;">Image</th>
-          <th style="padding:10px 14px;text-align:center;font-size:0.8em;color:#E07A5F;font-weight:600;">DHI CVEs</th>
+          <th style="padding:10px 14px;text-align:center;font-size:0.8em;color:#E07A5F;font-weight:600;">Docker Hub CVEs</th>
           <th style="padding:10px 14px;text-align:center;font-size:0.8em;color:#16a34a;font-weight:600;">Chainguard CVEs</th>
           <th style="padding:10px 14px;font-size:0.8em;color:#6b7280;font-weight:600;">Reduction</th>
         </tr>

@@ -20,6 +20,58 @@
   └─────────────────────────────────┴─────────────────────────────────────────────
 
 
+⏺ Yes — it's 7 unique image types scanned twice, once from each vendor, so 14 total scan targets:
+
+  ┌────────────┬───────────────────────────────────────┬─────────────────────────────┐
+  │   Image    │            Chainguard (CG)            │ Docker Hardened Image (DHI) │
+  ├────────────┼───────────────────────────────────────┼─────────────────────────────┤
+  │ wordpress  │ cgr.dev/chainguard-private/wordpress  │ wordpress:latest            │
+  ├────────────┼───────────────────────────────────────┼─────────────────────────────┤
+  │ nginx      │ cgr.dev/chainguard-private/nginx      │ nginx:latest                │
+  ├────────────┼───────────────────────────────────────┼─────────────────────────────┤
+  │ mariadb    │ cgr.dev/chainguard-private/mariadb    │ mariadb:latest              │
+  ├────────────┼───────────────────────────────────────┼─────────────────────────────┤
+  │ node       │ cgr.dev/chainguard-private/node       │ node:lts                    │
+  ├────────────┼───────────────────────────────────────┼─────────────────────────────┤
+  │ grype      │ cgr.dev/chainguard-private/grype      │ anchore/grype:latest        │
+  ├────────────┼───────────────────────────────────────┼─────────────────────────────┤
+  │ prometheus │ cgr.dev/chainguard-private/prometheus │ prom/prometheus:latest      │
+  ├────────────┼───────────────────────────────────────┼─────────────────────────────┤
+  │ grafana    │ cgr.dev/chainguard-private/grafana    │ grafana/grafana:latest      │
+  └────────────┴───────────────────────────────────────┴─────────────────────────────┘
+
+   Uses: claude-api skill + wordpress-content skill
+
+---
+  🏆 Top Pick — Auto-Generated "Scan Story" Blog Post
+
+  After every bin/scan.sh run, Claude reads the CVE data and automatically publishes a WordPress blog post written for humans:
+  - Headline like "Chainguard blocked 847 vulnerabilities this week"
+  - Plain-English storytelling — analogies, not jargon
+  - Spotlights the scariest CVE with context ("this one could let an attacker...")
+  - Side-by-side comparison with DHI framed as a story, not a table
+  - Auto-published with each scan
+
+  Uses: claude-api skill + wordpress-content skill
+
+  ---
+  🎯 Runner Up — AI Security Scorecard Page
+
+  Claude generates a visual "report card" page after each scan — letter grades (A through F) per container image, with one-sentence human summaries:
+  ▎ nginx: A — Clean bill of health. No known vulnerabilities.
+  ▎ wordpress (DHI): D — 23 open wounds, 4 critical.
+
+  Uses: claude-api skill + wordpress-content skill
+
+  ---
+  💬 Dark Horse — Embedded Security Q&A Chatbot
+
+  A Claude-powered chat widget embedded on the homepage or Issue Tracker page — visitors type plain-English questions like "Is this stack safe?" and get instant answers grounded in the actual scan data.
+
+  Uses: claude-api skill
+
+
+
     docker compose build app                                                                                                                                                                                             
   docker compose up -d --force-recreate app
 
@@ -28,7 +80,6 @@
   a94274519973feb66efa2c29ca587d8d9cab7c9c/ec65ce0fbac44140
 
   eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJodHRwczovL2lzc3Vlci5lbmZvcmNlLmRldiIsImV4cCI6MTc4MjE1OTcwNSwiaWF0IjoxNzc0MzgzNzA1LCJpc3MiOiJodHRwczovL3B1bGx0b2tlbi5pc3N1ZXIuY2hhaW5ndWFyZC5kZXYiLCJzdWIiOiJwdWxsLXRva2VuLTczMmI1Yjk5ZjUyZDM3OGZhZWJjMzRkMTMwZmJhOTAxZTMwYWRlOTQifQ.dhUSmw8a6-M9T8HRN6q76ojDRjDVlYZ3oK_k7izC-DKtPIoUsyX1ecAUsd6sKdsg9bivvRmINAFNDXWLQCw2vBZqT2nzC6yw4QlWlXcnJ5-ZHjiqBWTUXl-yRNMSMZla1ZxsUXIBhRI1gNgpM-BHrgKOl_ofbfVWWR1fDfcBcyh2_sLiUDx966pVJiWeR8wrxSu-mfwt9DMUlV0WFJkLgJ55gBue86CBpGVpbp8SLfBa8sihA_QCvVyFdc5F1SgHTzbEhVruxU7bl9aWoZNQWAkAod3t2-bqYvbFMTxHxgSVConoj7LxB03val4RQ6QBg4z0bASlIM1XIQeq8YK6VAVEzW6omPIuLWNeRh5Eng7WJpaxPj4Lof7mN4Bgzw1FTUkG53LukT-TtrwFc5Wf-tXzV8gFMQfnbv_NObpOT7Rd3UhiL_uP2lgUHbNcytTDXzl3EED0z156JR-8nuTVNS6tlu-bxzFmnaTh74QxFwdx2On5HNRvowK51eArL3Ca46glCtYMuwD7eRy76gtgmkwlL1ygzEVc2TOJvuta7Ps5Ek9YQUZXJsEeGKFDY9UzkE6R2EqitraSmS3WCASTqi0pP22irov2N2Z5Omhs4fprB3eXFionPdD71z2kHyOpDJRKmcisL47XEM093MTZaa6Q8zIFGrRBHa3PBTEaS7s
-
 
 
 DEMO JS Libraries:
